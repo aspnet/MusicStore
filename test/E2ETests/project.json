@@ -6,13 +6,13 @@
         "test": "xunit.runner.aspnet"
     },
     "dependencies": {
-        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
-        "Microsoft.AspNet.Server.Testing": "1.0.0-*",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta5",
+        "Microsoft.AspNet.Server.Testing": "1.0.0-beta5",
         "Microsoft.AspNet.SignalR.Client": "2.1.1",
-        "Microsoft.AspNet.WebUtilities": "1.0.0-*",
-        "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-*",
-        "Microsoft.Framework.Logging.Console": "1.0.0-*",
-        "xunit.runner.aspnet": "2.0.0-aspnet-*"
+        "Microsoft.AspNet.WebUtilities": "1.0.0-beta5",
+        "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta5",
+        "Microsoft.Framework.Logging.Console": "1.0.0-beta5",
+        "xunit.runner.aspnet": "2.0.0-aspnet-beta5"
     },
     "frameworks": {
         "dnx451": {
