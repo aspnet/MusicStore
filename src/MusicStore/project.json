@@ -4,39 +4,45 @@
     ],
     "description": "Music store application on ASP.NET 5",
     "version": "1.0.0-*",
-    "compilationOptions": { "warningsAsErrors": true, "define": [ "DEMO", "TESTING" ] },
+    "compilationOptions": {
+        "warningsAsErrors": true,
+        "define": [
+            "DEMO",
+            "TESTING"
+        ]
+    },
     "compile": [
         "../../test/E2ETests/compiler/shared/**/*.cs"
     ],
     "publishExclude": "*.cmd",
     "webroot": "wwwroot",
     "dependencies": {
-        "EntityFramework.InMemory": "7.0.0-*",
-        "EntityFramework.SqlServer": "7.0.0-*",
-        "Kestrel": "1.0.0-*",
-        "Microsoft.AspNet.Antiforgery": "1.0.0-*",
-        "Microsoft.AspNet.Authentication.Cookies": "1.0.0-*",
-        "Microsoft.AspNet.Authentication.Facebook": "1.0.0-*",
-        "Microsoft.AspNet.Authentication.Google": "1.0.0-*",
-        "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-*",
-        "Microsoft.AspNet.Authentication.OpenIdConnect": "1.0.0-*",
-        "Microsoft.AspNet.Authentication.Twitter": "1.0.0-*",
-        "Microsoft.AspNet.Diagnostics": "1.0.0-*",
-        "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-*",
-        "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-*",
-        "Microsoft.AspNet.Mvc": "6.0.0-*",
-        "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-*",
-        "Microsoft.AspNet.Server.IIS": "1.0.0-*",
-        "Microsoft.AspNet.Server.WebListener": "1.0.0-*",
-        "Microsoft.AspNet.Session": "1.0.0-*",
-        "Microsoft.AspNet.SignalR.Server": "3.0.0-*",
-        "Microsoft.AspNet.StaticFiles": "1.0.0-*",
-        "Microsoft.AspNet.Tooling.Razor": "1.0.0-*",
-        "Microsoft.Framework.CodeGenerators.Mvc": "1.0.0-*",
-        "Microsoft.Framework.Configuration.CommandLine": "1.0.0-*",
-        "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-*",
-        "Microsoft.Framework.Configuration.Json": "1.0.0-*",
-        "Microsoft.Framework.Logging.Console": "1.0.0-*"
+        "EntityFramework.InMemory": "7.0.0-beta6",
+        "EntityFramework.SqlServer": "7.0.0-beta6",
+        "Kestrel": "1.0.0-beta6",
+        "Microsoft.AspNet.Antiforgery": "1.0.0-beta6",
+        "Microsoft.AspNet.Authentication.Cookies": "1.0.0-beta6",
+        "Microsoft.AspNet.Authentication.Facebook": "1.0.0-beta6",
+        "Microsoft.AspNet.Authentication.Google": "1.0.0-beta6",
+        "Microsoft.AspNet.Authentication.MicrosoftAccount": "1.0.0-beta6",
+        "Microsoft.AspNet.Authentication.OpenIdConnect": "1.0.0-beta6",
+        "Microsoft.AspNet.Authentication.Twitter": "1.0.0-beta6",
+        "Microsoft.AspNet.Diagnostics": "1.0.0-beta6",
+        "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-beta6",
+        "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-beta6",
+        "Microsoft.AspNet.Mvc": "6.0.0-beta6",
+        "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-beta6",
+        "Microsoft.AspNet.Server.IIS": "1.0.0-beta6",
+        "Microsoft.AspNet.Server.WebListener": "1.0.0-beta6",
+        "Microsoft.AspNet.Session": "1.0.0-beta6",
+        "Microsoft.AspNet.SignalR.Server": "3.0.0-beta6",
+        "Microsoft.AspNet.StaticFiles": "1.0.0-beta6",
+        "Microsoft.AspNet.Tooling.Razor": "1.0.0-beta6",
+        "Microsoft.Framework.CodeGenerators.Mvc": "1.0.0-beta6",
+        "Microsoft.Framework.Configuration.CommandLine": "1.0.0-beta6",
+        "Microsoft.Framework.Configuration.EnvironmentVariables": "1.0.0-beta6",
+        "Microsoft.Framework.Configuration.Json": "1.0.0-beta6",
+        "Microsoft.Framework.Logging.Console": "1.0.0-beta6"
     },
     "commands": {
         "gen": "Microsoft.Framework.CodeGeneration",
@@ -45,10 +51,10 @@
         "web": "Microsoft.AspNet.Hosting --server Microsoft.AspNet.Server.WebListener --server.urls http://localhost:5002"
     },
     "frameworks": {
-        "dnx451": { },
+        "dnx451": {},
         "dnxcore50": {
             "dependencies": {
-                "System.Runtime.Serialization.Primitives": "4.0.10-beta-*"
+                "System.Runtime.Serialization.Primitives": "4.0.10-beta-23109"
             }
         }
     }
