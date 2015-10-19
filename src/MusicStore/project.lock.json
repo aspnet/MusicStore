@@ -5072,8 +5072,12 @@
       },
       "System.Threading.Overlapped/4.0.0": {
         "type": "package",
+        "dependencies": {
+          "System.Runtime": "4.0.0",
+          "System.Runtime.Handles": "4.0.0"
+        },
         "compile": {
-          "lib/contract/System.Threading.Overlapped.dll": {}
+          "ref/dotnet/System.Threading.Overlapped.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.Threading.Overlapped.dll": {}
@@ -12099,7 +12103,17 @@
         }
       },
       "System.Globalization.Calendars/4.0.0": {
-        "type": "package"
+        "type": "package",
+        "dependencies": {
+          "System.Globalization": "4.0.0",
+          "System.Runtime": "4.0.0"
+        },
+        "compile": {
+          "ref/dotnet/System.Globalization.Calendars.dll": {}
+        },
+        "runtime": {
+          "lib/DNXCore50/System.Globalization.Calendars.dll": {}
+        }
       },
       "System.Globalization.Extensions/4.0.1-beta-23409": {
         "type": "package",
@@ -12614,7 +12628,19 @@
         }
       },
       "System.Runtime.Numerics/4.0.0": {
-        "type": "package"
+        "type": "package",
+        "dependencies": {
+          "System.Globalization": "4.0.10",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.20",
+          "System.Runtime.Extensions": "4.0.10"
+        },
+        "compile": {
+          "ref/dotnet/System.Runtime.Numerics.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet/System.Runtime.Numerics.dll": {}
+        }
       },
       "System.Runtime.Serialization.Primitives/4.0.11-beta-23409": {
         "type": "package",
@@ -12856,8 +12882,12 @@
       },
       "System.Threading.Overlapped/4.0.0": {
         "type": "package",
+        "dependencies": {
+          "System.Runtime": "4.0.0",
+          "System.Runtime.Handles": "4.0.0"
+        },
         "compile": {
-          "lib/contract/System.Threading.Overlapped.dll": {}
+          "ref/dotnet/System.Threading.Overlapped.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.Threading.Overlapped.dll": {}
@@ -15431,7 +15461,17 @@
         }
       },
       "System.Globalization.Calendars/4.0.0": {
-        "type": "package"
+        "type": "package",
+        "dependencies": {
+          "System.Globalization": "4.0.0",
+          "System.Runtime": "4.0.0"
+        },
+        "compile": {
+          "ref/dotnet/System.Globalization.Calendars.dll": {}
+        },
+        "runtime": {
+          "lib/DNXCore50/System.Globalization.Calendars.dll": {}
+        }
       },
       "System.Globalization.Extensions/4.0.1-beta-23409": {
         "type": "package",
@@ -15946,7 +15986,19 @@
         }
       },
       "System.Runtime.Numerics/4.0.0": {
-        "type": "package"
+        "type": "package",
+        "dependencies": {
+          "System.Globalization": "4.0.10",
+          "System.Resources.ResourceManager": "4.0.0",
+          "System.Runtime": "4.0.20",
+          "System.Runtime.Extensions": "4.0.10"
+        },
+        "compile": {
+          "ref/dotnet/System.Runtime.Numerics.dll": {}
+        },
+        "runtime": {
+          "lib/dotnet/System.Runtime.Numerics.dll": {}
+        }
       },
       "System.Runtime.Serialization.Primitives/4.0.11-beta-23409": {
         "type": "package",
@@ -16188,8 +16240,12 @@
       },
       "System.Threading.Overlapped/4.0.0": {
         "type": "package",
+        "dependencies": {
+          "System.Runtime": "4.0.0",
+          "System.Runtime.Handles": "4.0.0"
+        },
         "compile": {
-          "lib/contract/System.Threading.Overlapped.dll": {}
+          "ref/dotnet/System.Threading.Overlapped.dll": {}
         },
         "runtime": {
           "lib/DNXCore50/System.Threading.Overlapped.dll": {}
@@ -18464,7 +18520,7 @@
     "runtime.win7.System.Threading/4.0.11-beta-23409": {
       "type": "package",
       "serviceable": true,
-      "sha512": "V9BYsks+TUXbB52ze7t9OM5KB8aD/KuvRml9arSfToJdZMo7zYSTrcj8xCRuIE7ClFCyNplJzs53zYA9qQi8zw==",
+      "sha512": "KUUz+kNOK8ZEaCDERH/lS8RCVN9ww79xSAjWhs1/7pyN43727Xoh4GGODA0BUV3dAmBMvxMQVgDPwi/Ylvj/YQ==",
       "files": [
         "ref/dotnet/_._",
         "runtime.win7.System.Threading.4.0.11-beta-23409.nupkg",
@@ -18944,7 +19000,7 @@
     "System.Data.SqlClient/4.0.0-beta-23409": {
       "type": "package",
       "serviceable": true,
-      "sha512": "4nXlamQPqLGhdLzMoBgJb619MtpiEvjjJEphD6V0cj7uj9DJs4Gqw4JkSj7rf95QX6DJhI4Zc3lUsu2MkqHrIg==",
+      "sha512": "f/2bsdGE1AHW31fxzkCRlkdJQtK+5kDgq9F3e7wb+L1mCymy/F/CkqN9dZVD6vsoKyEl0/WdWy7WE/dL3ydLHg==",
       "files": [
         "lib/MonoAndroid10/_._",
         "lib/MonoTouch10/_._",
@@ -19423,10 +19479,32 @@
     },
     "System.Globalization.Calendars/4.0.0": {
       "type": "package",
-      "sha512": "unNM3UgK0kR9ac/9a74aGOMSz6SgJXHCw+EYpYBe4LBm++7JROLe2uRhx8CJbkeWsM3ySnfJrGwkPSSM0ZmNAA==",
+      "sha512": "cL6WrdGKnNBx9W/iTr+jbffsEO4RLjEtOYcpVSzPNDoli6X5Q6bAfWtJYbJNOPi8Q0fXgBEvKK1ncFL/3FTqlA==",
       "files": [
-        "lib/aspnetcore50/System.Globalization.Calendars.dll",
-        "lib/contract/System.Globalization.Calendars.dll",
+        "lib/DNXCore50/System.Globalization.Calendars.dll",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net46/System.Globalization.Calendars.dll",
+        "lib/netcore50/System.Globalization.Calendars.dll",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "ref/dotnet/de/System.Globalization.Calendars.xml",
+        "ref/dotnet/es/System.Globalization.Calendars.xml",
+        "ref/dotnet/fr/System.Globalization.Calendars.xml",
+        "ref/dotnet/it/System.Globalization.Calendars.xml",
+        "ref/dotnet/ja/System.Globalization.Calendars.xml",
+        "ref/dotnet/ko/System.Globalization.Calendars.xml",
+        "ref/dotnet/ru/System.Globalization.Calendars.xml",
+        "ref/dotnet/System.Globalization.Calendars.dll",
+        "ref/dotnet/System.Globalization.Calendars.xml",
+        "ref/dotnet/zh-hans/System.Globalization.Calendars.xml",
+        "ref/dotnet/zh-hant/System.Globalization.Calendars.xml",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net46/System.Globalization.Calendars.dll",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "runtimes/win8-aot/lib/netcore50/System.Globalization.Calendars.dll",
         "System.Globalization.Calendars.4.0.0.nupkg",
         "System.Globalization.Calendars.4.0.0.nupkg.sha512",
         "System.Globalization.Calendars.nuspec"
@@ -19848,7 +19926,7 @@
     "System.Net.Http/4.0.1-beta-23409": {
       "type": "package",
       "serviceable": true,
-      "sha512": "FzfaQV17DmYxTH2xcpF4PfeCVcEmDf1MvE956I4/FDxiPFKaePXLv+dDbciuMl7C3bhqeBiC7ws0/t6AsiAiXA==",
+      "sha512": "h9CPYbGzH/9faYD24qLNBY+/dH8F67AktW3UvrEJR7Xan3bzXKJd5Po/3+qRswNsRUH2P/HBSK5fZE3CKVmhxg==",
       "files": [
         "lib/net45/_._",
         "lib/win8/_._",
@@ -20034,7 +20112,7 @@
     },
     "System.Private.Uri/4.0.1-beta-23409": {
       "type": "package",
-      "sha512": "AFcABskTE3SUyh75bTI3EcmQsqdH9LsEkEE39yeG83bBeu3FQhIcTkJjrmAkgncxP0YYyJohQ1ti/iO8JXtjFg==",
+      "sha512": "CDTFX1023ZLDnJvOH9lnBxZbTlosJhta4ymKSgXU4Yk9BVkO3cTwqdiIV5VRddXqQuJ4ksDHV0UmbPNs15pVvQ==",
       "files": [
         "ref/dnxcore50/_._",
         "ref/netcore50/_._",
@@ -20802,10 +20880,30 @@
     },
     "System.Runtime.Numerics/4.0.0": {
       "type": "package",
-      "sha512": "NBJgeNU+0+5e8v1hb9qQdldYwmbyLM/75M9pr7x6ODeL75Rfw7/LlwNGUFh5JBJe6PiaMS688vKKRtLW3JWIuQ==",
+      "serviceable": true,
+      "sha512": "aAYGEOE01nabQLufQ4YO8WuSyZzOqGcksi8m1BRW8ppkmssR7en8TqiXcBkB2gTkCnKG/Ai2NQY8CgdmgZw/fw==",
       "files": [
-        "lib/aspnetcore50/System.Runtime.Numerics.dll",
-        "lib/contract/System.Runtime.Numerics.dll",
+        "lib/dotnet/System.Runtime.Numerics.dll",
+        "lib/net45/_._",
+        "lib/netcore50/System.Runtime.Numerics.dll",
+        "lib/win8/_._",
+        "lib/wpa81/_._",
+        "ref/dotnet/de/System.Runtime.Numerics.xml",
+        "ref/dotnet/es/System.Runtime.Numerics.xml",
+        "ref/dotnet/fr/System.Runtime.Numerics.xml",
+        "ref/dotnet/it/System.Runtime.Numerics.xml",
+        "ref/dotnet/ja/System.Runtime.Numerics.xml",
+        "ref/dotnet/ko/System.Runtime.Numerics.xml",
+        "ref/dotnet/ru/System.Runtime.Numerics.xml",
+        "ref/dotnet/System.Runtime.Numerics.dll",
+        "ref/dotnet/System.Runtime.Numerics.xml",
+        "ref/dotnet/zh-hans/System.Runtime.Numerics.xml",
+        "ref/dotnet/zh-hant/System.Runtime.Numerics.xml",
+        "ref/net45/_._",
+        "ref/netcore50/System.Runtime.Numerics.dll",
+        "ref/netcore50/System.Runtime.Numerics.xml",
+        "ref/win8/_._",
+        "ref/wpa81/_._",
         "System.Runtime.Numerics.4.0.0.nupkg",
         "System.Runtime.Numerics.4.0.0.nupkg.sha512",
         "System.Runtime.Numerics.nuspec"
@@ -21035,7 +21133,7 @@
     "System.Security.Principal.Windows/4.0.0-beta-23409": {
       "type": "package",
       "serviceable": true,
-      "sha512": "cV7C3TlbAPUVwfQutL7GTfbAhLJ6AimNMPSMVaEH+5hwnf7GQfhPWtavQipfzynTheOHm2Uyc3ovIZnK52Fn+w==",
+      "sha512": "hwgr72KpJqz+SSGnypyruztYaxJecdu+CkTsqrpJGkjBBdSQJbW3PTaG1KJF6+nRSX9tyLS/kezMJS3jktRb8g==",
       "files": [
         "lib/DNXCore50/de/System.Security.Principal.Windows.xml",
         "lib/DNXCore50/es/System.Security.Principal.Windows.xml",
@@ -21059,7 +21157,7 @@
     "System.Security.SecureString/4.0.0-beta-23225": {
       "type": "package",
       "serviceable": true,
-      "sha512": "yeh8SaUJQx7BsyqntzyU0jnnKso5US6QX2g6eHBLC1MRb7swwFb12Bd4N7RwSslEaj6LLWzFKb4Lw8AMaWfXbA==",
+      "sha512": "fWZiVly2v05MLJFbtJBwThJmSQAh1slsEUqVxjy/K58RWHN8ar8BNz/1h318eHNd5vcTA7155awMNNMzY/Cbag==",
       "files": [
         "lib/DNXCore50/System.Security.SecureString.dll",
         "lib/MonoAndroid10/_._",
@@ -21347,10 +21445,8 @@
     "System.Threading.Overlapped/4.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "MoePL55naRl0wyIVAv+YuE61G8KDE/kEQFOL/uOkiSUJH5oieBdgUToF3vdHkfRPllgze/nWU7WzpUbviXEW3w==",
+      "sha512": "X5LuQFhM5FTqaez3eXKJ9CbfSGZ7wj6j4hSVtxct3zmwQXLqG95qoWdvILcgN7xtrDOBIFtpiyDg0vmoI0jE2A==",
       "files": [
-        "lib/aspnetcore50/System.Threading.Overlapped.dll",
-        "lib/contract/System.Threading.Overlapped.dll",
         "lib/DNXCore50/System.Threading.Overlapped.dll",
         "lib/net46/System.Threading.Overlapped.dll",
         "lib/netcore50/System.Threading.Overlapped.dll",
