@@ -9,13 +9,13 @@
     "test": "xunit.runner.aspnet"
   },
   "dependencies": {
-    "Microsoft.AspNet.Authentication.OpenIdConnect": "1.0.0-*",
+    "Microsoft.AspNet.Authentication.OpenIdConnect": "1.0.0-rc1-final",
     "Microsoft.AspNet.Server.IIS": "1.0.0-*",
-    "Microsoft.AspNet.Server.Testing": "1.0.0-*",
-    "Microsoft.AspNet.WebUtilities": "1.0.0-*",
-    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-*",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-*",
-    "xunit.runner.aspnet": "2.0.0-aspnet-*"
+    "Microsoft.AspNet.Server.Testing": "1.0.0-rc1-final",
+    "Microsoft.AspNet.WebUtilities": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0-rc1-final",
+    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
+    "xunit.runner.aspnet": "2.0.0-aspnet-rc1-final"
   },
   "frameworks": {
     "dnx451": {

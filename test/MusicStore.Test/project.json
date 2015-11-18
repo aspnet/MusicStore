@@ -3,15 +3,15 @@
     "warningsAsErrors": true
   },
   "dependencies": {
-    "Microsoft.Extensions.Logging.Testing": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Testing": "1.0.0-rc1-final",
     "MusicStore": "",
-    "xunit.runner.aspnet": "2.0.0-aspnet-*"
+    "xunit.runner.aspnet": "2.0.0-aspnet-rc1-final"
   },
   "commands": {
     "test": "xunit.runner.aspnet"
   },
   "frameworks": {
-    "dnx451": { },
-    "dnxcore50": { }
+    "dnx451": {},
+    "dnxcore50": {}
   }
 }
