@@ -23,6 +23,9 @@ namespace MusicStore.Models
             {
                 var db = serviceScope.ServiceProvider.GetService<MusicStoreContext>();
 
+                System.Data.Common.DbConnection conn = db.Database.GetDbConnection();
+                System.Console.WriteLine("Database Info:  Server=" + conn.DataSource + "  Database=" + conn.Database);
+
                 if (await db.Database.EnsureCreatedAsync())
                 {
                     await InsertTestData(serviceProvider);

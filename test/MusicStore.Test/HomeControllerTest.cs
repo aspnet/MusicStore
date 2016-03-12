@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using MusicStore.Models;
 using Xunit;
+using MusicStore.Test;
 
 namespace MusicStore.Controllers
 {
@@ -28,7 +29,7 @@ namespace MusicStore.Controllers
         public void Error_ReturnsErrorView()
         {
             // Arrange
-            var controller = new HomeController();
+            var controller = new HomeController(new OptionsImpl<AppSettings>(new AppSettings() { SiteTitle = "SiteTitle", CacheTimeout = 600 }));
             var errorView = "~/Views/Shared/Error.cshtml";
 
             // Act
@@ -46,7 +47,7 @@ namespace MusicStore.Controllers
             // Arrange
             var dbContext = _serviceProvider.GetRequiredService<MusicStoreContext>();
             var cache = _serviceProvider.GetRequiredService<IMemoryCache>();
-            var controller = new HomeController();
+            var controller = new HomeController(new OptionsImpl<AppSettings>(new AppSettings() { SiteTitle = "SiteTitle", CacheTimeout = 600 }));
             PopulateData(dbContext);
 
             // Action
@@ -67,7 +68,7 @@ namespace MusicStore.Controllers
         public void StatusCodePage_ReturnsStatusCodePage()
         {
             // Arrange
-            var controller = new HomeController();
+            var controller = new HomeController(new OptionsImpl<AppSettings>(new AppSettings() { SiteTitle = "SiteTitle", CacheTimeout = 600 }));
             var statusCodeView = "~/Views/Shared/StatusCodePage.cshtml";
 
             // Action
