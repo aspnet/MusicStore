@@ -1,7 +1,8 @@
 ﻿{
-    "AppSettings": {
-        "SiteTitle": "ASP.NET MVC Music Store"
-    },
+  "AppSettings": {
+    "SiteTitle": "ASP.NET MVC Music Store",
+    "CacheTimeout": "0"
+  },
     "DefaultAdminUsername": "Administrator@test.com",
     "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
     "Data": {

@@ -6,11 +6,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using MusicStore.Models;
+using Microsoft.Extensions.Options;
+using MusicStore.Extensions;
+
 
 namespace MusicStore.Controllers
 {
     public class HomeController : Controller
     {
+
+        private IOptions<AppSettings> AppSettings;
+
+        public HomeController(IOptions<AppSettings> appSettings)
+        {
+            AppSettings = appSettings; 
+        }
+        
         //
         // GET: /Home/
         public async Task<IActionResult> Index(
@@ -20,7 +31,7 @@ namespace MusicStore.Controllers
             // Get most popular albums
             var cacheKey = "topselling";
             List<Album> albums;
-            if (!cache.TryGetValue(cacheKey, out albums))
+            if (!cache.TryGetValueExt(cacheKey, out albums, AppSettings.Value.CacheTimeout))
             {
                 albums = await GetTopSellingAlbumsAsync(dbContext, 6);
 
@@ -28,12 +39,13 @@ namespace MusicStore.Controllers
                 {
                     // Refresh it every 10 minutes.
                     // Let this be the last item to be removed by cache if cache GC kicks in.
-                    cache.Set(
+                    cache.SetExt(
                         cacheKey,
                         albums,
                         new MemoryCacheEntryOptions()
-                            .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))
-                            .SetPriority(CacheItemPriority.High));
+                            .SetAbsoluteExpiration(TimeSpan.FromSeconds(AppSettings.Value.CacheTimeout > 0 ? AppSettings.Value.CacheTimeout : 1))
+                            .SetPriority(CacheItemPriority.High),
+                        AppSettings.Value.CacheTimeout);
                 }
             }
 
