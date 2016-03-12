@@ -34,6 +34,7 @@ namespace MusicStore
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            System.Console.WriteLine("Cache timeout:  " + Configuration["AppSettings:CacheTimeout"]);
 
             var useInMemoryStore = !_platform.IsRunningOnWindows
                 || _platform.IsRunningOnMono
