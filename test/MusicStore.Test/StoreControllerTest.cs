@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MusicStore.Models;
+using MusicStore.Test;
 using Xunit;
 
 namespace MusicStore.Controllers
@@ -21,6 +23,13 @@ namespace MusicStore.Controllers
 
             services.AddDbContext<MusicStoreContext>(options => options.UseInMemoryDatabase());
 
+            services.AddOptions();
+            services.Configure<AppSettings>(appSettings =>
+            {
+                appSettings.SiteTitle = "Site Title";
+                appSettings.CacheTimeout = 600;
+            });
+
             _serviceProvider = services.BuildServiceProvider();
         }
 
@@ -31,7 +40,9 @@ namespace MusicStore.Controllers
             var dbContext = _serviceProvider.GetRequiredService<MusicStoreContext>();
             CreateTestGenres(numberOfGenres: 10, numberOfAlbums: 1, dbContext: dbContext);
 
-            var controller = new StoreController(dbContext);
+            var appSettings = _serviceProvider.GetRequiredService<IOptions<AppSettings>>();
+
+            var controller = new StoreController(dbContext, appSettings);
 
             // Act
             var result = await controller.Index();
@@ -49,7 +60,7 @@ namespace MusicStore.Controllers
         public async Task Browse_ReturnsHttpNotFoundWhenNoGenreData()
         {
             // Arrange
-            var controller = new StoreController(_serviceProvider.GetRequiredService<MusicStoreContext>());
+            var controller = new StoreController(_serviceProvider.GetRequiredService<MusicStoreContext>(), _serviceProvider.GetRequiredService<IOptions<AppSettings>>());
 
             // Act
             var result = await controller.Browse(string.Empty);
@@ -67,7 +78,9 @@ namespace MusicStore.Controllers
             var dbContext = _serviceProvider.GetRequiredService<MusicStoreContext>();
             CreateTestGenres(numberOfGenres: 3, numberOfAlbums: 3, dbContext: dbContext);
 
-            var controller = new StoreController(dbContext);
+            var appSettings = _serviceProvider.GetRequiredService<IOptions<AppSettings>>();
+
+            var controller = new StoreController(dbContext, appSettings);
 
             // Act
             var result = await controller.Browse(genreName);
@@ -88,7 +101,7 @@ namespace MusicStore.Controllers
         {
             // Arrange
             var albumId = int.MinValue;
-            var controller = new StoreController(_serviceProvider.GetRequiredService<MusicStoreContext>());
+            var controller = new StoreController(_serviceProvider.GetRequiredService<MusicStoreContext>(), _serviceProvider.GetRequiredService<IOptions<AppSettings>>());
 
             // Act
             var result = await controller.Details(_serviceProvider.GetRequiredService<IMemoryCache>(), albumId);
@@ -108,7 +121,9 @@ namespace MusicStore.Controllers
 
             var cache = _serviceProvider.GetRequiredService<IMemoryCache>();
 
-            var controller = new StoreController(dbContext);
+            var appSettings = _serviceProvider.GetRequiredService<IOptions<AppSettings>>();
+
+            var controller = new StoreController(dbContext, appSettings);
 
             // Act
             var result = await controller.Details(cache, albumId);

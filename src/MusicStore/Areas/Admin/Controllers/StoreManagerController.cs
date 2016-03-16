@@ -19,12 +19,12 @@ namespace MusicStore.Areas.Admin.Controllers
     [Authorize("ManageStore")]
     public class StoreManagerController : Controller
     {
-        private IOptions<AppSettings> AppSettings;
+        private AppSettings _appSettings;
 
         public StoreManagerController(MusicStoreContext dbContext, IOptions<AppSettings> appSettings)
         {
             DbContext = dbContext;
-            AppSettings = appSettings;
+            _appSettings = appSettings.Value;
         }
 
         public MusicStoreContext DbContext { get; }
@@ -50,7 +50,7 @@ namespace MusicStore.Areas.Admin.Controllers
             var cacheKey = GetCacheKey(id);
 
             Album album;
-            if (!cache.TryGetValueExt(cacheKey, out album, AppSettings.Value.CacheTimeout))
+            if (!cache.TryGetValueExt(cacheKey, out album,_appSettings.CacheTimeoutInSeconds))
             {
                 album = await DbContext.Albums
                         .Where(a => a.AlbumId == id)
@@ -64,14 +64,14 @@ namespace MusicStore.Areas.Admin.Controllers
                     cache.SetExt(
                         cacheKey,
                         album,
-                        new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(AppSettings.Value.CacheTimeout > 0 ? AppSettings.Value.CacheTimeout : 1)),
-                     AppSettings.Value.CacheTimeout);
+                        new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(_appSettings.CacheTimeoutInSeconds > 0 ?_appSettings.CacheTimeoutInSeconds : 1)),
+                    _appSettings.CacheTimeoutInSeconds);
                 }
             }
 
             if (album == null)
             {
-                cache.RemoveExt(cacheKey, AppSettings.Value.CacheTimeout);
+                cache.RemoveExt(cacheKey,_appSettings.CacheTimeoutInSeconds);
                 return NotFound();
             }
 
@@ -106,7 +106,7 @@ namespace MusicStore.Areas.Admin.Controllers
                     Url = Url.Action("Details", "Store", new { id = album.AlbumId })
                 };
 
-                cache.RemoveExt("latestAlbum", AppSettings.Value.CacheTimeout);
+                cache.RemoveExt("latestAlbum",_appSettings.CacheTimeoutInSeconds);
                 return RedirectToAction("Index");
             }
 
@@ -147,7 +147,7 @@ namespace MusicStore.Areas.Admin.Controllers
                 DbContext.Update(album);
                 await DbContext.SaveChangesAsync(requestAborted);
                 //Invalidate the cache entry as it is modified
-                cache.RemoveExt(GetCacheKey(album.AlbumId), AppSettings.Value.CacheTimeout);
+                cache.RemoveExt(GetCacheKey(album.AlbumId),_appSettings.CacheTimeoutInSeconds);
                 return RedirectToAction("Index");
             }
 
@@ -186,7 +186,7 @@ namespace MusicStore.Areas.Admin.Controllers
             DbContext.Albums.Remove(album);
             await DbContext.SaveChangesAsync(requestAborted);
             //Remove the cache entry as it is removed
-            cache.RemoveExt(GetCacheKey(id), AppSettings.Value.CacheTimeout);
+            cache.RemoveExt(GetCacheKey(id),_appSettings.CacheTimeoutInSeconds);
 
             return RedirectToAction("Index");
         }
