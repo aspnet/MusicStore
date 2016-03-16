@@ -3,6 +3,6 @@
     public class AppSettings
     {
         public string SiteTitle { get; set; }
-        public int CacheTimeout { get; set; } = 600;
+        public int CacheTimeoutInSeconds { get; set; } = 600;
     }
 }
