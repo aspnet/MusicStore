@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using MusicStore.Extensions;
 using MusicStore.Models;
 using MusicStore.ViewModels;
 
@@ -17,9 +19,12 @@ namespace MusicStore.Areas.Admin.Controllers
     [Authorize("ManageStore")]
     public class StoreManagerController : Controller
     {
-        public StoreManagerController(MusicStoreContext dbContext)
+        private AppSettings _appSettings;
+
+        public StoreManagerController(MusicStoreContext dbContext, IOptions<AppSettings> appSettings)
         {
             DbContext = dbContext;
+            _appSettings = appSettings.Value;
         }
 
         public MusicStoreContext DbContext { get; }
@@ -45,7 +50,7 @@ namespace MusicStore.Areas.Admin.Controllers
             var cacheKey = GetCacheKey(id);
 
             Album album;
-            if (!cache.TryGetValue(cacheKey, out album))
+            if (!cache.TryGetValueExt(cacheKey, out album, _appSettings.CacheTimeoutSeconds))
             {
                 album = await DbContext.Albums
                         .Where(a => a.AlbumId == id)
@@ -56,16 +61,17 @@ namespace MusicStore.Areas.Admin.Controllers
                 if (album != null)
                 {
                     //Remove it from cache if not retrieved in last 10 minutes.
-                    cache.Set(
+                    cache.SetExt(
                         cacheKey,
                         album,
-                        new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10)));
+                        new MemoryCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(_appSettings.CacheTimeoutSeconds > 0 ? _appSettings.CacheTimeoutSeconds : 1)),
+                     _appSettings.CacheTimeoutSeconds);
                 }
             }
 
             if (album == null)
             {
-                cache.Remove(cacheKey);
+                cache.RemoveExt(cacheKey, _appSettings.CacheTimeoutSeconds);
                 return NotFound();
             }
 
@@ -100,7 +106,7 @@ namespace MusicStore.Areas.Admin.Controllers
                     Url = Url.Action("Details", "Store", new { id = album.AlbumId })
                 };
 
-                cache.Remove("latestAlbum");
+                cache.RemoveExt("latestAlbum", _appSettings.CacheTimeoutSeconds);
                 return RedirectToAction("Index");
             }
 
@@ -141,7 +147,7 @@ namespace MusicStore.Areas.Admin.Controllers
                 DbContext.Update(album);
                 await DbContext.SaveChangesAsync(requestAborted);
                 //Invalidate the cache entry as it is modified
-                cache.Remove(GetCacheKey(album.AlbumId));
+                cache.RemoveExt(GetCacheKey(album.AlbumId), _appSettings.CacheTimeoutSeconds);
                 return RedirectToAction("Index");
             }
 
@@ -180,7 +186,7 @@ namespace MusicStore.Areas.Admin.Controllers
             DbContext.Albums.Remove(album);
             await DbContext.SaveChangesAsync(requestAborted);
             //Remove the cache entry as it is removed
-            cache.Remove(GetCacheKey(id));
+            cache.RemoveExt(GetCacheKey(id), _appSettings.CacheTimeoutSeconds);
 
             return RedirectToAction("Index");
         }

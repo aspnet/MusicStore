@@ -17,6 +17,7 @@
     },
     "web": {
       "commandName": "web",
+      "commandLineArgs": "server.urls=http://*:5000",
       "environmentVariables": {
         "Hosting:Environment": "Development"
       }

@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MusicStore.Models;
 using Xunit;
+using MusicStore.Test;
 
 namespace MusicStore.Controllers
 {
@@ -23,14 +25,24 @@ namespace MusicStore.Controllers
 
             services.AddDbContext<MusicStoreContext>(b => b.UseInMemoryDatabase().UseInternalServiceProvider(efServiceProvider));
 
+            services.AddOptions();
+            services.Configure<AppSettings>(appSettings =>
+            {
+                appSettings.SiteTitle = "Site Title";
+                appSettings.CacheTimeoutSeconds = 600;
+            });
+
             _serviceProvider = services.BuildServiceProvider();
         }
 
         [Fact]
         public void Error_ReturnsErrorView()
         {
+
+           var appSettings = _serviceProvider.GetRequiredService<IOptions<AppSettings>>();
+
             // Arrange
-            var controller = new HomeController();
+            var controller = new HomeController(appSettings);
             var errorView = "~/Views/Shared/Error.cshtml";
 
             // Act
@@ -48,7 +60,10 @@ namespace MusicStore.Controllers
             // Arrange
             var dbContext = _serviceProvider.GetRequiredService<MusicStoreContext>();
             var cache = _serviceProvider.GetRequiredService<IMemoryCache>();
-            var controller = new HomeController();
+
+            var appSettings = _serviceProvider.GetRequiredService<IOptions<AppSettings>>();
+
+            var controller = new HomeController(appSettings);
             PopulateData(dbContext);
 
             // Action
@@ -68,8 +83,10 @@ namespace MusicStore.Controllers
         [Fact]
         public void StatusCodePage_ReturnsStatusCodePage()
         {
+            var appSettings = _serviceProvider.GetRequiredService<IOptions<AppSettings>>();
+
             // Arrange
-            var controller = new HomeController();
+            var controller = new HomeController(appSettings);
             var statusCodeView = "~/Views/Shared/StatusCodePage.cshtml";
 
             // Action
