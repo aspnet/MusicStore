@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -5,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.PlatformAbstractions;
 using MusicStore.Components;
 using MusicStore.Models;
 
@@ -70,7 +70,7 @@ namespace MusicStore
             });
 
             // Add MVC services to the services container
-            services.AddMvc();
+            services.AddMvc().AddApplicationPart(typeof(CartSummaryComponent).GetTypeInfo().Assembly);
 
             // Add memory cache services
             services.AddMemoryCache();

@@ -4,7 +4,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 
 namespace MusicStore
 {
-    internal class Platform
+    public class Platform
     {
         // Defined in winnt.h
         private const int PRODUCT_NANO_SERVER = 0x0000006D;
