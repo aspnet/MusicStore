@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using MusicStore.Components;
 using MusicStore.Models;
+using System;
 
 namespace MusicStore
 {
@@ -38,7 +39,8 @@ namespace MusicStore
 
             var useInMemoryStore = !_platform.IsRunningOnWindows
                 || _platform.IsRunningOnMono
-                || _platform.IsRunningOnNanoServer;
+                || _platform.IsRunningOnNanoServer 
+                ||  "false".Equals(Environment.GetEnvironmentVariable("UseDatabase"));;
 
             // Add EF services to the services container
             if (useInMemoryStore)
