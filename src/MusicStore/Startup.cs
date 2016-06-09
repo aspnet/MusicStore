@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -69,6 +70,7 @@ namespace MusicStore
 
             // Add MVC services to the services container
             services.AddMvc();
+            services.AddSingleton<IRazorPageFactoryProvider, PrecompiledRazorPageFactoryProvider>();
 
             // Add memory cache services
             services.AddMemoryCache();
