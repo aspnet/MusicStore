@@ -87,7 +87,7 @@ namespace MusicStore
         {
             get
             {
-                return !IsRunningOnWindows || IsRunningOnMono || IsRunningOnNanoServer;
+                return false;
             }
         }
 

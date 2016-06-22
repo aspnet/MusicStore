@@ -43,8 +43,10 @@ namespace MusicStore
             }
             else
             {
+                var dbId = System.Environment.GetEnvironmentVariable("aspnet_test_musicstore_dbid");
+                var dbPw = System.Environment.GetEnvironmentVariable("aspnet_test_musicstore_dbpw");
                 services.AddDbContext<MusicStoreContext>(options =>
-                    options.UseSqlServer(Configuration[StoreConfig.ConnectionStringKey.Replace("__", ":")]));
+                    options.UseSqlServer(Configuration[StoreConfig.ConnectionStringKey.Replace("__", ":")] + $";User ID={dbId};Password={dbPw}"));
             }
 
             // Add Identity services to the services container
