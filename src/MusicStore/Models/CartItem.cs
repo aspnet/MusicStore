@@ -9,7 +9,7 @@ namespace MusicStore.Models
         public int CartItemId { get; set; }
 
         [Required]
-        public string CartId { get; set; }
+        public Guid CartId { get; set; }
         public int AlbumId { get; set; }
         public int Count { get; set; }
 

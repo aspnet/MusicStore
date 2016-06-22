@@ -10,9 +10,9 @@ namespace MusicStore.Models
     public class ShoppingCart
     {
         private readonly MusicStoreContext _dbContext;
-        private readonly string _shoppingCartId;
+        private readonly Guid _shoppingCartId;
 
-        private ShoppingCart(MusicStoreContext dbContext, string id)
+        private ShoppingCart(MusicStoreContext dbContext, Guid id)
         {
             _dbContext = dbContext;
             _shoppingCartId = id;
@@ -21,7 +21,7 @@ namespace MusicStore.Models
         public static ShoppingCart GetCart(MusicStoreContext db, HttpContext context) 
             => GetCart(db, GetCartId(context));
 
-        public static ShoppingCart GetCart(MusicStoreContext db, string cartId)
+        public static ShoppingCart GetCart(MusicStoreContext db, Guid cartId)
             => new ShoppingCart(db, cartId);
 
         public async Task AddToCart(Album album)
@@ -166,17 +166,22 @@ namespace MusicStore.Models
         }
 
         // We're using HttpContextBase to allow access to sessions.
-        private static string GetCartId(HttpContext context)
+        private static Guid GetCartId(HttpContext context)
         {
-            var cartId = context.Session.GetString("Session");
+            Guid cartId;
+            string cartIdString = context.Session.GetString("Session");
 
-            if (cartId == null)
+            if (cartIdString == null)
             {
                 //A GUID to hold the cartId. 
-                cartId = Guid.NewGuid().ToString();
+                cartId = Guid.NewGuid();
 
                 // Send cart Id as a cookie to the client.
-                context.Session.SetString("Session", cartId);
+                context.Session.SetString("Session", cartId.ToString());
+            }
+            else
+            {
+                cartId = Guid.Parse(cartIdString);
             }
 
             return cartId;
