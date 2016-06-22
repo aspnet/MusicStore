@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<configuration>
+  <system.webServer>
+    <aspNetCore forwardWindowsAuthToken="true" processPath="..\MusicStore.exe" stdoutLogEnabled="true" stdoutLogFile=".\stdout.log" />
+    <handlers>
+      <add name="aspNetCore" path="*" verb="*" modules="AspNetCoreModule" resourceType="Unspecified"/>
+    </handlers>
+  </system.webServer>
+</configuration>
