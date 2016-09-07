@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Net.Http.Server;
@@ -9,6 +11,8 @@ namespace MusicStore
     {
         public static void Main(string[] args)
         {
+            var totalTime = Stopwatch.StartNew();
+
             var config = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
@@ -46,7 +50,23 @@ namespace MusicStore
 
             var host = builder.Build();
 
-            host.Run();
+            host.Start();
+
+            totalTime.Stop();
+            Console.WriteLine("Server started in {0}ms", totalTime.ElapsedMilliseconds);
+            Console.WriteLine();
+
+            using (var client = new HttpClient())
+            {
+                Console.WriteLine("Starting request to http://localhost:5000");
+                var requestTime = Stopwatch.StartNew();
+                var response = client.GetAsync("http://localhost:5000").Result;
+                requestTime.Stop();
+                Console.WriteLine("Response: {0}", response.StatusCode);
+                Console.WriteLine("Request took {0}ms", requestTime.ElapsedMilliseconds);
+            }
+
+            Console.WriteLine();
         }
     }
 }
