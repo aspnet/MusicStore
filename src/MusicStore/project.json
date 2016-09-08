@@ -33,7 +33,9 @@
       "Views",
       "wwwroot",
       "config.json",
-      "web.config"
+      "web.config",
+      "crossgen",
+      "crossgen-publish.ps1"
     ]
   },
   "dependencies": {
@@ -76,6 +78,7 @@
     "Microsoft.AspNetCore.Server.IISIntegration.Tools": "1.0.0-*"
   },
   "scripts": {
+    "prepublish": "powershell /c ./get-crossgen.ps1",
     "postpublish": "dotnet publish-iis --publish-folder %publish:OutputPath% --framework %publish:FullTargetFramework%"
   }
 }
