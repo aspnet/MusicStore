@@ -4,8 +4,8 @@
   },
   "dependencies": {
     "dotnet-test-xunit": "1.0.0-rc3-000000-01",
-    "Microsoft.Extensions.Logging.Testing": "1.0.0-rtm-21431",
-    "MusicStore": "1.0.0-*",
+    "Microsoft.Extensions.Logging.Testing": "1.0.1",
+    "MusicStore": "1.0.1",
     "XUnit": "2.1.0"
   },
   "frameworks": {
