@@ -62,7 +62,6 @@
     "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.1"
   },
   "frameworks": {
-    "net451": {},
     "netcoreapp1.0": {
       "dependencies": {
         "Microsoft.NETCore.App": {
