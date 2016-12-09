@@ -1,0 +1,10 @@
+FROM aspnetcorenightly-exp.azurecr.io/aspnetcore-build:1.0.3-projectjson
+
+ENV ASPNETCORE_URLS http://+:5000
+
+COPY src/MusicStore/bin/Release/netcoreapp1.0/publish /MusicStore
+WORKDIR /MusicStore
+
+EXPOSE 5000
+
+ENTRYPOINT ["dotnet", "MusicStore.dll"]
