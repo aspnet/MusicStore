@@ -287,7 +287,9 @@ namespace E2ETests
                 var configuration = new ConfigurationBuilder()
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .AddJsonFile("remoteDeploymentConfig.json")
+#pragma warning disable CS0618
                         .AddUserSecrets()
+#pragma warning restore CS0618
                         .AddEnvironmentVariables()
                         .Build();
 
