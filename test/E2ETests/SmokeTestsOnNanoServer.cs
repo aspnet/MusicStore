@@ -284,14 +284,14 @@ namespace E2ETests
         {
             if (_remoteDeploymentConfig == null)
             {
+#pragma warning disable 0618
                 var configuration = new ConfigurationBuilder()
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .AddJsonFile("remoteDeploymentConfig.json")
-#pragma warning disable 0618
                         .AddUserSecrets()
-#pragma warning restore 0618
                         .AddEnvironmentVariables()
                         .Build();
+#pragma warning restore 0618
 
                 _remoteDeploymentConfig = new RemoteDeploymentConfig();
                 configuration.GetSection("NanoServer").Bind(_remoteDeploymentConfig);
