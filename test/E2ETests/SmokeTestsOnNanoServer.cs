@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Threading.Tasks;
-using E2ETests.Common;
 using Microsoft.AspNetCore.Server.IntegrationTesting;
 using Microsoft.AspNetCore.Testing.xunit;
 using Microsoft.Extensions.Configuration;
@@ -18,14 +17,15 @@ namespace E2ETests
     public class SmokeTestsOnNanoServerUsingStandaloneRuntime : IDisposable
     {
         private readonly SmokeTestsOnNanoServer _smokeTestsOnNanoServer;
-        private readonly XunitLogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly RemoteDeploymentConfig _remoteDeploymentConfig;
 
         public SmokeTestsOnNanoServerUsingStandaloneRuntime(ITestOutputHelper output)
         {
-            _logger = new XunitLogger(output, LogLevel.Information);
+            _loggerFactory = new LoggerFactory()
+                .AddXunit(output);
             _remoteDeploymentConfig = RemoteDeploymentConfigHelper.GetConfiguration();
-            _smokeTestsOnNanoServer = new SmokeTestsOnNanoServer(output, _remoteDeploymentConfig, _logger);
+            _smokeTestsOnNanoServer = new SmokeTestsOnNanoServer(output, _remoteDeploymentConfig, _loggerFactory);
         }
 
         [ConditionalTheory, Trait("E2ETests", "NanoServer")]
@@ -43,7 +43,7 @@ namespace E2ETests
 
         public void Dispose()
         {
-            _logger.Dispose();
+            _loggerFactory.Dispose();
         }
     }
 
@@ -56,15 +56,16 @@ namespace E2ETests
     {
         private readonly SmokeTestsOnNanoServer _smokeTestsOnNanoServer;
         private readonly RemoteDeploymentConfig _remoteDeploymentConfig;
-        private readonly XunitLogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public SmokeTestsOnNanoServerUsingSharedRuntime(
             DotnetRuntimeSetupTestFixture dotnetRuntimeSetupTestFixture, ITestOutputHelper output)
         {
-            _logger = new XunitLogger(output, LogLevel.Information);
+            _loggerFactory = new LoggerFactory()
+                .AddXunit(output);
             _remoteDeploymentConfig = RemoteDeploymentConfigHelper.GetConfiguration();
             _remoteDeploymentConfig.DotnetRuntimePathOnShare = dotnetRuntimeSetupTestFixture.DotnetRuntimePathOnShare;
-            _smokeTestsOnNanoServer = new SmokeTestsOnNanoServer(output, _remoteDeploymentConfig, _logger);
+            _smokeTestsOnNanoServer = new SmokeTestsOnNanoServer(output, _remoteDeploymentConfig, _loggerFactory);
         }
 
         [ConditionalTheory, Trait("E2Etests", "NanoServer")]
@@ -82,7 +83,7 @@ namespace E2ETests
 
         public void Dispose()
         {
-            _logger.Dispose();
+            _loggerFactory.Dispose();
         }
 
         // Copies dotnet runtime to the target server's file share.
@@ -234,12 +235,12 @@ namespace E2ETests
 
     class SmokeTestsOnNanoServer
     {
-        private readonly XunitLogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly RemoteDeploymentConfig _remoteDeploymentConfig;
 
-        public SmokeTestsOnNanoServer(ITestOutputHelper output, RemoteDeploymentConfig config, XunitLogger logger)
+        public SmokeTestsOnNanoServer(ITestOutputHelper output, RemoteDeploymentConfig config, ILoggerFactory loggerFactory)
         {
-            _logger = logger;
+            _loggerFactory = loggerFactory;
             _remoteDeploymentConfig = config;
         }
 
@@ -248,7 +249,8 @@ namespace E2ETests
             string applicationBaseUrl,
             ApplicationType applicationType)
         {
-            using (_logger.BeginScope(nameof(SmokeTestsOnNanoServerUsingStandaloneRuntime)))
+            var logger = _loggerFactory.CreateLogger($"SmokeTestsOnNanoServer:{serverType}:{applicationType}");
+            using (logger.BeginScope(nameof(SmokeTestsOnNanoServerUsingStandaloneRuntime)))
             {
                 var deploymentParameters = new RemoteWindowsDeploymentParameters(
                     Helpers.GetApplicationPath(applicationType),
@@ -277,11 +279,11 @@ namespace E2ETests
                 deploymentParameters.EnvironmentVariables.Add(
                     new KeyValuePair<string, string>("ASPNETCORE_ENVIRONMENT", "SocialTesting"));
 
-                using (var deployer = new RemoteWindowsDeployer(deploymentParameters, _logger))
+                using (var deployer = new RemoteWindowsDeployer(deploymentParameters, logger))
                 {
-                    var deploymentResult = deployer.Deploy();
+                    var deploymentResult = await deployer.DeployAsync();
 
-                    await SmokeTestHelper.RunTestsAsync(deploymentResult, _logger);
+                    await SmokeTestHelper.RunTestsAsync(deploymentResult, logger);
                 }
             }
         }

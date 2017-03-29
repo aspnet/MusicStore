@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -12,54 +12,54 @@ using Xunit.Abstractions;
 
 namespace E2ETests
 {
-    // Uses ports ranging 5040 - 5049.
     public class OpenIdConnectTests : IDisposable
     {
-        private readonly XunitLogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public OpenIdConnectTests(ITestOutputHelper output)
         {
-            _logger = new XunitLogger(output, LogLevel.Information);
+            _loggerFactory = new LoggerFactory()
+                .AddXunit(output);
         }
 
         [ConditionalTheory, Trait("E2Etests", "E2Etests")]
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        //[InlineData(ServerType.Kestrel, RuntimeFlavor.Clr, RuntimeArchitecture.x64, ApplicationType.Portable, "http://localhost:5040/")]
-        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable, "http://localhost:5041/")]
-        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone, "http://localhost:5042/")]
+        //[InlineData(ServerType.Kestrel, RuntimeFlavor.Clr, RuntimeArchitecture.x64, ApplicationType.Portable)]
+        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable)]
+        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone)]
         public async Task OpenIdConnect_OnWindowsOS(
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
             RuntimeArchitecture architecture,
-            ApplicationType applicationType,
-            string applicationBaseUrl)
+            ApplicationType applicationType)
         {
-            await OpenIdConnectTestSuite(serverType, runtimeFlavor, architecture, applicationType, applicationBaseUrl);
+            await OpenIdConnectTestSuite(serverType, runtimeFlavor, architecture, applicationType);
         }
 
         [ConditionalTheory, Trait("E2Etests", "E2Etests")]
         [OSSkipCondition(OperatingSystems.Windows)]
-        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable, "http://localhost:5043/")]
-        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone, "http://localhost:5044/", Skip = "https://github.com/aspnet/MusicStore/issues/761")]
-        public async Task OpenIdConnect_OnNonWindows(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType, string applicationBaseUrl)
+        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable)]
+        [InlineData(ServerType.Kestrel, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone, Skip = "https://github.com/aspnet/MusicStore/issues/761")]
+        public async Task OpenIdConnect_OnNonWindows(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType)
         {
-            await OpenIdConnectTestSuite(serverType, runtimeFlavor, architecture, applicationType, applicationBaseUrl);
+            await OpenIdConnectTestSuite(serverType, runtimeFlavor, architecture, applicationType);
         }
 
         // TODO: temporarily disabling x86 tests as dotnet xunit test runner currently does not support 32-bit
 
         //[ConditionalTheory(Skip = "https://github.com/aspnet/MusicStore/issues/565"), Trait("E2Etests", "E2Etests")]
         //[OSSkipCondition(OperatingSystems.Windows)]
-        //[InlineData(ServerType.Kestrel, RuntimeFlavor.Clr, RuntimeArchitecture.x86, ApplicationType.Portable, "http://localhost:5045/")]
-        //public async Task OpenIdConnect_OnMono(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType, string applicationBaseUrl)
+        //[InlineData(ServerType.Kestrel, RuntimeFlavor.Clr, RuntimeArchitecture.x86, ApplicationType.Portable)]
+        //public async Task OpenIdConnect_OnMono(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType)
         //{
-        //    await OpenIdConnectTestSuite(serverType, runtimeFlavor, architecture, applicationBaseUrl);
+        //    await OpenIdConnectTestSuite(serverType, runtimeFlavor, architecture);
         //}
 
-        private async Task OpenIdConnectTestSuite(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType, string applicationBaseUrl)
+        private async Task OpenIdConnectTestSuite(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType)
         {
-            using (_logger.BeginScope("OpenIdConnectTestSuite"))
+            var logger = _loggerFactory.CreateLogger($"OpenIdConnectTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
+            using (logger.BeginScope("OpenIdConnectTestSuite"))
             {
                 var musicStoreDbName = DbUtils.GetUniqueName();
 
@@ -70,11 +70,10 @@ namespace E2ETests
                     TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net451" : "netcoreapp1.1",
                     Configuration = Helpers.GetCurrentBuildConfiguration(),
                     ApplicationType = applicationType,
-                    ApplicationBaseUriHint = applicationBaseUrl,
                     EnvironmentName = "OpenIdConnectTesting",
                     UserAdditionalCleanup = parameters =>
                     {
-                        DbUtils.DropDatabase(musicStoreDbName, _logger);
+                        DbUtils.DropDatabase(musicStoreDbName, logger);
                     }
                 };
 
@@ -89,9 +88,9 @@ namespace E2ETests
                         MusicStoreConfig.ConnectionStringKey,
                         DbUtils.CreateConnectionString(musicStoreDbName)));
 
-                using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _logger))
+                using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
                 {
-                    var deploymentResult = deployer.Deploy();
+                    var deploymentResult = await deployer.DeployAsync();
                     var httpClientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpClientHandler) { BaseAddress = new Uri(deploymentResult.ApplicationBaseUri) };
 
@@ -99,12 +98,12 @@ namespace E2ETests
                     var response = await RetryHelper.RetryRequest(async () =>
                     {
                         return await httpClient.GetAsync(string.Empty);
-                    }, logger: _logger, cancellationToken: deploymentResult.HostShutdownToken);
+                    }, logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
 
                     Assert.False(response == null, "Response object is null because the client could not " +
                         "connect to the server after multiple retries");
 
-                    var validator = new Validator(httpClient, httpClientHandler, _logger, deploymentResult);
+                    var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
 
                     Console.WriteLine("Verifying home page");
                     await validator.VerifyHomePage(response);
@@ -112,14 +111,14 @@ namespace E2ETests
                     Console.WriteLine("Verifying login by OpenIdConnect");
                     await validator.LoginWithOpenIdConnect();
 
-                    _logger.LogInformation("Variation completed successfully.");
+                    logger.LogInformation("Variation completed successfully.");
                 }
             }
         }
 
         public void Dispose()
         {
-            _logger.Dispose();
+            _loggerFactory.Dispose();
         }
     }
 }
