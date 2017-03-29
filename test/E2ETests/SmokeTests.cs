@@ -13,8 +13,7 @@ namespace E2ETests
 {
     // Uses ports ranging 5001 - 5025.
     // TODO: temporarily disabling these tests as dotnet xunit runner does not support 32-bit yet.
-    // public
-    class SmokeTests_X86 : IDisposable
+    internal class SmokeTests_X86 : IDisposable
     {
         private readonly ILoggerFactory _loggerFactory;
 
@@ -40,8 +39,7 @@ namespace E2ETests
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
             RuntimeArchitecture architecture,
-            ApplicationType applicationType,
-            string applicationBaseUrl)
+            ApplicationType applicationType)
         {
             var smokeTestRunner = new SmokeTests(_loggerFactory);
             await smokeTestRunner.SmokeTestSuite(serverType, runtimeFlavor, architecture, applicationType);
@@ -54,8 +52,7 @@ namespace E2ETests
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
             RuntimeArchitecture architecture,
-            ApplicationType applicationType,
-            string applicationBaseUrl)
+            ApplicationType applicationType)
         {
             var smokeTestRunner = new SmokeTests(_loggerFactory);
             await smokeTestRunner.SmokeTestSuite(serverType, runtimeFlavor, architecture, applicationType);
@@ -93,8 +90,7 @@ namespace E2ETests
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
             RuntimeArchitecture architecture,
-            ApplicationType applicationType,
-            string applicationBaseUrl)
+            ApplicationType applicationType)
         {
             var smokeTestRunner = new SmokeTests(_loggerFactory);
             await smokeTestRunner.SmokeTestSuite(serverType, runtimeFlavor, architecture, applicationType);
@@ -108,8 +104,7 @@ namespace E2ETests
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
             RuntimeArchitecture architecture,
-            ApplicationType applicationType,
-            string applicationBaseUrl)
+            ApplicationType applicationType)
         {
             var smokeTestRunner = new SmokeTests(_loggerFactory);
             await smokeTestRunner.SmokeTestSuite(serverType, runtimeFlavor, architecture, applicationType);
@@ -142,8 +137,7 @@ namespace E2ETests
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
             RuntimeArchitecture architecture,
-            ApplicationType applicationType,
-            string applicationBaseUrl)
+            ApplicationType applicationType)
         {
             var smokeTestRunner = new SmokeTests(_loggerFactory);
             await smokeTestRunner.SmokeTestSuite(
