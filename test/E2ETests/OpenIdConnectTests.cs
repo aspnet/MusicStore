@@ -58,61 +58,69 @@ namespace E2ETests
 
         private async Task OpenIdConnectTestSuite(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType)
         {
-            var logger = _loggerFactory.CreateLogger($"OpenIdConnectTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
-            using (logger.BeginScope("OpenIdConnectTestSuite"))
+            try
             {
-                var musicStoreDbName = DbUtils.GetUniqueName();
-
-                var deploymentParameters = new DeploymentParameters(Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
+                Console.WriteLine($"Starting OpenIdConnectTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
+                var logger = _loggerFactory.CreateLogger($"OpenIdConnectTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
+                using (logger.BeginScope("OpenIdConnectTestSuite"))
                 {
-                    PublishApplicationBeforeDeployment = true,
-                    PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
-                    TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net451" : "netcoreapp1.1",
-                    Configuration = Helpers.GetCurrentBuildConfiguration(),
-                    ApplicationType = applicationType,
-                    EnvironmentName = "OpenIdConnectTesting",
-                    UserAdditionalCleanup = parameters =>
+                    var musicStoreDbName = DbUtils.GetUniqueName();
+
+                    var deploymentParameters = new DeploymentParameters(Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
                     {
-                        DbUtils.DropDatabase(musicStoreDbName, logger);
+                        PublishApplicationBeforeDeployment = true,
+                        PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
+                        TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net451" : "netcoreapp1.1",
+                        Configuration = Helpers.GetCurrentBuildConfiguration(),
+                        ApplicationType = applicationType,
+                        EnvironmentName = "OpenIdConnectTesting",
+                        UserAdditionalCleanup = parameters =>
+                        {
+                            DbUtils.DropDatabase(musicStoreDbName, logger);
+                        }
+                    };
+
+                    if (applicationType == ApplicationType.Standalone)
+                    {
+                        deploymentParameters.AdditionalPublishParameters = " -r " + RuntimeEnvironment.GetRuntimeIdentifier();
                     }
-                };
 
-                if (applicationType == ApplicationType.Standalone)
-                {
-                    deploymentParameters.AdditionalPublishParameters = " -r " + RuntimeEnvironment.GetRuntimeIdentifier();
-                }
+                    // Override the connection strings using environment based configuration
+                    deploymentParameters.EnvironmentVariables
+                        .Add(new KeyValuePair<string, string>(
+                            MusicStoreConfig.ConnectionStringKey,
+                            DbUtils.CreateConnectionString(musicStoreDbName)));
 
-                // Override the connection strings using environment based configuration
-                deploymentParameters.EnvironmentVariables
-                    .Add(new KeyValuePair<string, string>(
-                        MusicStoreConfig.ConnectionStringKey,
-                        DbUtils.CreateConnectionString(musicStoreDbName)));
-
-                using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
-                {
-                    var deploymentResult = await deployer.DeployAsync();
-                    var httpClientHandler = new HttpClientHandler();
-                    var httpClient = new HttpClient(httpClientHandler) { BaseAddress = new Uri(deploymentResult.ApplicationBaseUri) };
-
-                    // Request to base address and check if various parts of the body are rendered & measure the cold startup time.
-                    var response = await RetryHelper.RetryRequest(async () =>
+                    using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
                     {
-                        return await httpClient.GetAsync(string.Empty);
-                    }, logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
+                        var deploymentResult = await deployer.DeployAsync();
+                        var httpClientHandler = new HttpClientHandler();
+                        var httpClient = new HttpClient(httpClientHandler) { BaseAddress = new Uri(deploymentResult.ApplicationBaseUri) };
 
-                    Assert.False(response == null, "Response object is null because the client could not " +
-                        "connect to the server after multiple retries");
+                        // Request to base address and check if various parts of the body are rendered & measure the cold startup time.
+                        var response = await RetryHelper.RetryRequest(async () =>
+                        {
+                            return await httpClient.GetAsync(string.Empty);
+                        }, logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
 
-                    var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
+                        Assert.False(response == null, "Response object is null because the client could not " +
+                            "connect to the server after multiple retries");
 
-                    Console.WriteLine("Verifying home page");
-                    await validator.VerifyHomePage(response);
+                        var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
 
-                    Console.WriteLine("Verifying login by OpenIdConnect");
-                    await validator.LoginWithOpenIdConnect();
+                        Console.WriteLine("Verifying home page");
+                        await validator.VerifyHomePage(response);
 
-                    logger.LogInformation("Variation completed successfully.");
+                        Console.WriteLine("Verifying login by OpenIdConnect");
+                        await validator.LoginWithOpenIdConnect();
+
+                        logger.LogInformation("Variation completed successfully.");
+                    }
                 }
+            }
+            finally
+            {
+                Console.WriteLine("Finished OpenIdConnectTestSuite");
             }
         }
 

@@ -166,47 +166,56 @@ namespace E2ETests
             ApplicationType applicationType,
             bool noSource = false)
         {
-            var logger = _loggerFactory.CreateLogger($"SmokeTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
-            using (logger.BeginScope("SmokeTestSuite"))
+            var testName = $"SmokeTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}";
+            try
             {
-                var musicStoreDbName = DbUtils.GetUniqueName();
-
-                var deploymentParameters = new DeploymentParameters(
-                    Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
+                Console.WriteLine($"Starting {testName}");
+                var logger = _loggerFactory.CreateLogger(testName);
+                using (logger.BeginScope("SmokeTestSuite"))
                 {
-                    EnvironmentName = "SocialTesting",
-                    ServerConfigTemplateContent = (serverType == ServerType.IISExpress) ? File.ReadAllText("Http.config") : null,
-                    SiteName = "MusicStoreTestSite",
-                    PublishApplicationBeforeDeployment = true,
-                    PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
-                    TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net46" : "netcoreapp1.1",
-                    Configuration = Helpers.GetCurrentBuildConfiguration(),
-                    ApplicationType = applicationType,
-                    UserAdditionalCleanup = parameters =>
+                    var musicStoreDbName = DbUtils.GetUniqueName();
+
+                    var deploymentParameters = new DeploymentParameters(
+                        Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
                     {
-                        DbUtils.DropDatabase(musicStoreDbName, logger);
+                        EnvironmentName = "SocialTesting",
+                        ServerConfigTemplateContent = (serverType == ServerType.IISExpress) ? File.ReadAllText("Http.config") : null,
+                        SiteName = "MusicStoreTestSite",
+                        PublishApplicationBeforeDeployment = true,
+                        PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
+                        TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net46" : "netcoreapp1.1",
+                        Configuration = Helpers.GetCurrentBuildConfiguration(),
+                        ApplicationType = applicationType,
+                        UserAdditionalCleanup = parameters =>
+                        {
+                            DbUtils.DropDatabase(musicStoreDbName, logger);
+                        }
+                    };
+
+                    if (applicationType == ApplicationType.Standalone)
+                    {
+                        deploymentParameters.AdditionalPublishParameters = " -r " + RuntimeEnvironment.GetRuntimeIdentifier();
                     }
-                };
 
-                if (applicationType == ApplicationType.Standalone)
-                {
-                    deploymentParameters.AdditionalPublishParameters = " -r " + RuntimeEnvironment.GetRuntimeIdentifier();
+                    // Override the connection strings using environment based configuration
+                    deploymentParameters.EnvironmentVariables
+                        .Add(new KeyValuePair<string, string>(
+                            MusicStoreConfig.ConnectionStringKey,
+                            DbUtils.CreateConnectionString(musicStoreDbName)));
+
+                    using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
+                    {
+                        var deploymentResult = await deployer.DeployAsync();
+
+                        Helpers.SetInMemoryStoreForIIS(deploymentParameters, logger);
+
+                        await SmokeTestHelper.RunTestsAsync(deploymentResult, logger);
+                    }
                 }
-
-                // Override the connection strings using environment based configuration
-                deploymentParameters.EnvironmentVariables
-                    .Add(new KeyValuePair<string, string>(
-                        MusicStoreConfig.ConnectionStringKey,
-                        DbUtils.CreateConnectionString(musicStoreDbName)));
-
-                using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
-                {
-                    var deploymentResult = await deployer.DeployAsync();
-
-                    Helpers.SetInMemoryStoreForIIS(deploymentParameters, logger);
-
-                    await SmokeTestHelper.RunTestsAsync(deploymentResult, logger);
-                }
+            }
+            finally
+            {
+                Console.WriteLine($"Finished {testName}");
             }
         }
     }

@@ -32,63 +32,71 @@ namespace E2ETests
         [InlineData(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone)]
         public async Task NtlmAuthenticationTest(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType)
         {
-            var logger = _loggerFactory.CreateLogger($"NtlmAuthentication:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
-            using (logger.BeginScope("NtlmAuthenticationTest"))
+            try
             {
-                var musicStoreDbName = DbUtils.GetUniqueName();
-
-                var deploymentParameters = new DeploymentParameters(Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
+                Console.WriteLine("NtlmAuthenticationTest");
+                var logger = _loggerFactory.CreateLogger($"NtlmAuthentication:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
+                using (logger.BeginScope("NtlmAuthenticationTest"))
                 {
-                    PublishApplicationBeforeDeployment = true,
-                    PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
-                    TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net451" : "netcoreapp1.1",
-                    Configuration = Helpers.GetCurrentBuildConfiguration(),
-                    ApplicationType = applicationType,
-                    EnvironmentName = "NtlmAuthentication", //Will pick the Start class named 'StartupNtlmAuthentication'
-                    ServerConfigTemplateContent = (serverType == ServerType.IISExpress) ? File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "NtlmAuthentation.config")) : null,
-                    SiteName = "MusicStoreNtlmAuthentication", //This is configured in the NtlmAuthentication.config
-                    UserAdditionalCleanup = parameters =>
+                    var musicStoreDbName = DbUtils.GetUniqueName();
+
+                    var deploymentParameters = new DeploymentParameters(Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
                     {
-                        DbUtils.DropDatabase(musicStoreDbName, logger);
+                        PublishApplicationBeforeDeployment = true,
+                        PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
+                        TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net451" : "netcoreapp1.1",
+                        Configuration = Helpers.GetCurrentBuildConfiguration(),
+                        ApplicationType = applicationType,
+                        EnvironmentName = "NtlmAuthentication", //Will pick the Start class named 'StartupNtlmAuthentication'
+                        ServerConfigTemplateContent = (serverType == ServerType.IISExpress) ? File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "NtlmAuthentation.config")) : null,
+                        SiteName = "MusicStoreNtlmAuthentication", //This is configured in the NtlmAuthentication.config
+                        UserAdditionalCleanup = parameters =>
+                        {
+                            DbUtils.DropDatabase(musicStoreDbName, logger);
+                        }
+                    };
+
+                    if (applicationType == ApplicationType.Standalone)
+                    {
+                        deploymentParameters.AdditionalPublishParameters = " -r " + RuntimeEnvironment.GetRuntimeIdentifier();
                     }
-                };
 
-                if (applicationType == ApplicationType.Standalone)
-                {
-                    deploymentParameters.AdditionalPublishParameters = " -r " + RuntimeEnvironment.GetRuntimeIdentifier();
-                }
+                    // Override the connection strings using environment based configuration
+                    deploymentParameters.EnvironmentVariables
+                        .Add(new KeyValuePair<string, string>(
+                            MusicStoreConfig.ConnectionStringKey,
+                            DbUtils.CreateConnectionString(musicStoreDbName)));
 
-                // Override the connection strings using environment based configuration
-                deploymentParameters.EnvironmentVariables
-                    .Add(new KeyValuePair<string, string>(
-                        MusicStoreConfig.ConnectionStringKey,
-                        DbUtils.CreateConnectionString(musicStoreDbName)));
-
-                using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
-                {
-                    var deploymentResult = await deployer.DeployAsync();
-                    var httpClientHandler = new HttpClientHandler() { UseDefaultCredentials = true };
-                    var httpClient = new HttpClient(httpClientHandler) { BaseAddress = new Uri(deploymentResult.ApplicationBaseUri) };
-
-                    // Request to base address and check if various parts of the body are rendered & measure the cold startup time.
-                    var response = await RetryHelper.RetryRequest(async () =>
+                    using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
                     {
-                        return await httpClient.GetAsync(string.Empty);
-                    }, logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
+                        var deploymentResult = await deployer.DeployAsync();
+                        var httpClientHandler = new HttpClientHandler() { UseDefaultCredentials = true };
+                        var httpClient = new HttpClient(httpClientHandler) { BaseAddress = new Uri(deploymentResult.ApplicationBaseUri) };
 
-                    Assert.False(response == null, "Response object is null because the client could not " +
-                        "connect to the server after multiple retries");
+                        // Request to base address and check if various parts of the body are rendered & measure the cold startup time.
+                        var response = await RetryHelper.RetryRequest(async () =>
+                        {
+                            return await httpClient.GetAsync(string.Empty);
+                        }, logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
 
-                    var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
+                        Assert.False(response == null, "Response object is null because the client could not " +
+                            "connect to the server after multiple retries");
 
-                    Console.WriteLine("Verifying home page");
-                    await validator.VerifyNtlmHomePage(response);
+                        var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
 
-                    Console.WriteLine("Verifying access to store with permissions");
-                    await validator.AccessStoreWithPermissions();
+                        Console.WriteLine("Verifying home page");
+                        await validator.VerifyNtlmHomePage(response);
 
-                    logger.LogInformation("Variation completed successfully.");
+                        Console.WriteLine("Verifying access to store with permissions");
+                        await validator.AccessStoreWithPermissions();
+
+                        logger.LogInformation("Variation completed successfully.");
+                    }
                 }
+            }
+            finally
+            {
+                Console.WriteLine("Finished NtlmAuthenticationTest");
             }
         }
 

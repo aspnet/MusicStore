@@ -249,42 +249,51 @@ namespace E2ETests
             string applicationBaseUrl,
             ApplicationType applicationType)
         {
-            var logger = _loggerFactory.CreateLogger($"SmokeTestsOnNanoServer:{serverType}:{applicationType}");
-            using (logger.BeginScope(nameof(SmokeTestsOnNanoServerUsingStandaloneRuntime)))
+            var testName = $"SmokeTestsOnNanoServer:{serverType}:{applicationType}";
+            try
             {
-                var deploymentParameters = new RemoteWindowsDeploymentParameters(
-                    Helpers.GetApplicationPath(applicationType),
-                    _remoteDeploymentConfig.DotnetRuntimePathOnShare,
-                    serverType,
-                    RuntimeFlavor.CoreClr,
-                    RuntimeArchitecture.x64,
-                    _remoteDeploymentConfig.FileSharePath,
-                    _remoteDeploymentConfig.ServerName,
-                    _remoteDeploymentConfig.AccountName,
-                    _remoteDeploymentConfig.AccountPassword)
+                Console.WriteLine($"Started {testName}");
+                var logger = _loggerFactory.CreateLogger(testName);
+                using (logger.BeginScope(nameof(SmokeTestsOnNanoServerUsingStandaloneRuntime)))
                 {
-                    TargetFramework = "netcoreapp1.1",
-                    ApplicationBaseUriHint = applicationBaseUrl,
-                    ApplicationType = applicationType
-                };
+                    var deploymentParameters = new RemoteWindowsDeploymentParameters(
+                        Helpers.GetApplicationPath(applicationType),
+                        _remoteDeploymentConfig.DotnetRuntimePathOnShare,
+                        serverType,
+                        RuntimeFlavor.CoreClr,
+                        RuntimeArchitecture.x64,
+                        _remoteDeploymentConfig.FileSharePath,
+                        _remoteDeploymentConfig.ServerName,
+                        _remoteDeploymentConfig.AccountName,
+                        _remoteDeploymentConfig.AccountPassword)
+                    {
+                        TargetFramework = "netcoreapp1.1",
+                        ApplicationBaseUriHint = applicationBaseUrl,
+                        ApplicationType = applicationType
+                    };
 
-                if (applicationType == ApplicationType.Standalone)
-                {
-                    // Unable to use the RuntimeEnvironment.GetRuntimeIdentifier API here as NanoServer which is
-                    // part of Windows Server 2016 has a RID of 'win10-x64' where as the CI servers currently
-                    // run on Windows Server 2012 or less, which have different RIDs.
-                    deploymentParameters.AdditionalPublishParameters = "-r win10-x64";
+                    if (applicationType == ApplicationType.Standalone)
+                    {
+                        // Unable to use the RuntimeEnvironment.GetRuntimeIdentifier API here as NanoServer which is
+                        // part of Windows Server 2016 has a RID of 'win10-x64' where as the CI servers currently
+                        // run on Windows Server 2012 or less, which have different RIDs.
+                        deploymentParameters.AdditionalPublishParameters = "-r win10-x64";
+                    }
+
+                    deploymentParameters.EnvironmentVariables.Add(
+                        new KeyValuePair<string, string>("ASPNETCORE_ENVIRONMENT", "SocialTesting"));
+
+                    using (var deployer = new RemoteWindowsDeployer(deploymentParameters, logger))
+                    {
+                        var deploymentResult = await deployer.DeployAsync();
+
+                        await SmokeTestHelper.RunTestsAsync(deploymentResult, logger);
+                    }
                 }
-
-                deploymentParameters.EnvironmentVariables.Add(
-                    new KeyValuePair<string, string>("ASPNETCORE_ENVIRONMENT", "SocialTesting"));
-
-                using (var deployer = new RemoteWindowsDeployer(deploymentParameters, logger))
-                {
-                    var deploymentResult = await deployer.DeployAsync();
-
-                    await SmokeTestHelper.RunTestsAsync(deploymentResult, logger);
-                }
+            }
+            finally
+            {
+                Console.WriteLine($"Finished {testName}");
             }
         }
     }

@@ -135,70 +135,79 @@ namespace E2ETests
             ApplicationType applicationType,
             bool noSource)
         {
-            var logger = _loggerFactory.CreateLogger($"PublishAndRunTests:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}:NoSource={noSource}");
-            using (logger.BeginScope("Publish_And_Run_Tests"))
+            var testName = $"PublishAndRunTests:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}:NoSource={noSource}";
+            try
             {
-                var musicStoreDbName = DbUtils.GetUniqueName();
-
-                var deploymentParameters = new DeploymentParameters(
-                    Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
+                Console.WriteLine($"Starting {testName}");
+                var logger = _loggerFactory.CreateLogger(testName);
+                using (logger.BeginScope("Publish_And_Run_Tests"))
                 {
-                    PublishApplicationBeforeDeployment = true,
-                    PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
-                    TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net451" : "netcoreapp1.1",
-                    Configuration = Helpers.GetCurrentBuildConfiguration(),
-                    ApplicationType = applicationType,
-                    UserAdditionalCleanup = parameters =>
+                    var musicStoreDbName = DbUtils.GetUniqueName();
+
+                    var deploymentParameters = new DeploymentParameters(
+                        Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
                     {
-                        DbUtils.DropDatabase(musicStoreDbName, logger);
-                    }
-                };
-
-                if (applicationType == ApplicationType.Standalone)
-                {
-                    deploymentParameters.AdditionalPublishParameters = "-r " + RuntimeEnvironment.GetRuntimeIdentifier();
-                }
-
-                // Override the connection strings using environment based configuration
-                deploymentParameters.EnvironmentVariables
-                    .Add(new KeyValuePair<string, string>(
-                        MusicStoreConfig.ConnectionStringKey,
-                        DbUtils.CreateConnectionString(musicStoreDbName)));
-
-                using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
-                {
-                    var deploymentResult = await deployer.DeployAsync();
-                    var httpClientHandler = new HttpClientHandler() { UseDefaultCredentials = true };
-                    var httpClient = new HttpClient(httpClientHandler);
-                    httpClient.BaseAddress = new Uri(deploymentResult.ApplicationBaseUri);
-
-                    // Request to base address and check if various parts of the body are rendered &
-                    // measure the cold startup time.
-                    // Add retry logic since tests are flaky on mono due to connection issues
-                    var response = await RetryHelper.RetryRequest(async () => await httpClient.GetAsync(string.Empty), logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
-
-                    Assert.False(response == null, "Response object is null because the client could not " +
-                        "connect to the server after multiple retries");
-
-                    var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
-
-                    Console.WriteLine("Verifying home page");
-                    await validator.VerifyHomePage(response);
-
-                    Console.WriteLine("Verifying static files are served from static file middleware");
-                    await validator.VerifyStaticContentServed();
-
-                    if (serverType != ServerType.IISExpress)
-                    {
-                        if (Directory.GetFiles(
-                            deploymentParameters.ApplicationPath, "*.cmd", SearchOption.TopDirectoryOnly).Length > 0)
+                        PublishApplicationBeforeDeployment = true,
+                        PreservePublishedApplicationForDebugging = Helpers.PreservePublishedApplicationForDebugging,
+                        TargetFramework = runtimeFlavor == RuntimeFlavor.Clr ? "net451" : "netcoreapp1.1",
+                        Configuration = Helpers.GetCurrentBuildConfiguration(),
+                        ApplicationType = applicationType,
+                        UserAdditionalCleanup = parameters =>
                         {
-                            throw new Exception("publishExclude parameter values are not honored.");
+                            DbUtils.DropDatabase(musicStoreDbName, logger);
                         }
+                    };
+
+                    if (applicationType == ApplicationType.Standalone)
+                    {
+                        deploymentParameters.AdditionalPublishParameters = "-r " + RuntimeEnvironment.GetRuntimeIdentifier();
                     }
 
-                    logger.LogInformation("Variation completed successfully.");
+                    // Override the connection strings using environment based configuration
+                    deploymentParameters.EnvironmentVariables
+                        .Add(new KeyValuePair<string, string>(
+                            MusicStoreConfig.ConnectionStringKey,
+                            DbUtils.CreateConnectionString(musicStoreDbName)));
+
+                    using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
+                    {
+                        var deploymentResult = await deployer.DeployAsync();
+                        var httpClientHandler = new HttpClientHandler() { UseDefaultCredentials = true };
+                        var httpClient = new HttpClient(httpClientHandler);
+                        httpClient.BaseAddress = new Uri(deploymentResult.ApplicationBaseUri);
+
+                        // Request to base address and check if various parts of the body are rendered &
+                        // measure the cold startup time.
+                        // Add retry logic since tests are flaky on mono due to connection issues
+                        var response = await RetryHelper.RetryRequest(async () => await httpClient.GetAsync(string.Empty), logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
+
+                        Assert.False(response == null, "Response object is null because the client could not " +
+                            "connect to the server after multiple retries");
+
+                        var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
+
+                        Console.WriteLine("Verifying home page");
+                        await validator.VerifyHomePage(response);
+
+                        Console.WriteLine("Verifying static files are served from static file middleware");
+                        await validator.VerifyStaticContentServed();
+
+                        if (serverType != ServerType.IISExpress)
+                        {
+                            if (Directory.GetFiles(
+                                deploymentParameters.ApplicationPath, "*.cmd", SearchOption.TopDirectoryOnly).Length > 0)
+                            {
+                                throw new Exception("publishExclude parameter values are not honored.");
+                            }
+                        }
+
+                        logger.LogInformation("Variation completed successfully.");
+                    }
                 }
+            }
+            finally
+            {
+                Console.WriteLine($"Finished {testName}");
             }
         }
     }
