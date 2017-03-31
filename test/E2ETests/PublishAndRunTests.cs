@@ -142,8 +142,10 @@ namespace E2ETests
                 var logger = _loggerFactory.CreateLogger(testName);
                 using (logger.BeginScope("Publish_And_Run_Tests"))
                 {
+                    Console.WriteLine("1");
                     var musicStoreDbName = DbUtils.GetUniqueName();
 
+                    Console.WriteLine("2");
                     var deploymentParameters = new DeploymentParameters(
                         Helpers.GetApplicationPath(applicationType), serverType, runtimeFlavor, architecture)
                     {
@@ -154,16 +156,19 @@ namespace E2ETests
                         ApplicationType = applicationType,
                         UserAdditionalCleanup = parameters =>
                         {
+                            Console.WriteLine("DropDb");
                             DbUtils.DropDatabase(musicStoreDbName, logger);
                         }
                     };
 
+                    Console.WriteLine("3");
                     if (applicationType == ApplicationType.Standalone)
                     {
                         deploymentParameters.AdditionalPublishParameters = "-r " + RuntimeEnvironment.GetRuntimeIdentifier();
                     }
 
                     // Override the connection strings using environment based configuration
+                    Console.WriteLine("4");
                     deploymentParameters.EnvironmentVariables
                         .Add(new KeyValuePair<string, string>(
                             MusicStoreConfig.ConnectionStringKey,
@@ -171,7 +176,9 @@ namespace E2ETests
 
                     using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, _loggerFactory))
                     {
+                    Console.WriteLine("5");
                         var deploymentResult = await deployer.DeployAsync();
+                    Console.WriteLine("6");
                         var httpClientHandler = new HttpClientHandler() { UseDefaultCredentials = true };
                         var httpClient = new HttpClient(httpClientHandler);
                         httpClient.BaseAddress = new Uri(deploymentResult.ApplicationBaseUri);
@@ -179,7 +186,9 @@ namespace E2ETests
                         // Request to base address and check if various parts of the body are rendered &
                         // measure the cold startup time.
                         // Add retry logic since tests are flaky on mono due to connection issues
+                    Console.WriteLine("7");
                         var response = await RetryHelper.RetryRequest(async () => await httpClient.GetAsync(string.Empty), logger: logger, cancellationToken: deploymentResult.HostShutdownToken);
+                    Console.WriteLine("8");
 
                         Assert.False(response == null, "Response object is null because the client could not " +
                             "connect to the server after multiple retries");
@@ -187,9 +196,11 @@ namespace E2ETests
                         var validator = new Validator(httpClient, httpClientHandler, logger, deploymentResult);
 
                         Console.WriteLine("Verifying home page");
+                    Console.WriteLine("9");
                         await validator.VerifyHomePage(response);
 
                         Console.WriteLine("Verifying static files are served from static file middleware");
+                    Console.WriteLine("10");
                         await validator.VerifyStaticContentServed();
 
                         if (serverType != ServerType.IISExpress)

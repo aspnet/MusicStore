@@ -58,10 +58,11 @@ namespace E2ETests
 
         private async Task OpenIdConnectTestSuite(ServerType serverType, RuntimeFlavor runtimeFlavor, RuntimeArchitecture architecture, ApplicationType applicationType)
         {
+            var testName = $"OpenIdConnectTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}";
             try
             {
-                Console.WriteLine($"Starting OpenIdConnectTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
-                var logger = _loggerFactory.CreateLogger($"OpenIdConnectTestSuite:{serverType}:{runtimeFlavor}:{architecture}:{applicationType}");
+                Console.WriteLine($"Starting {testName}");
+                var logger = _loggerFactory.CreateLogger(testName);
                 using (logger.BeginScope("OpenIdConnectTestSuite"))
                 {
                     var musicStoreDbName = DbUtils.GetUniqueName();
@@ -120,7 +121,7 @@ namespace E2ETests
             }
             finally
             {
-                Console.WriteLine("Finished OpenIdConnectTestSuite");
+                Console.WriteLine($"Finished {testName}");
             }
         }
 
