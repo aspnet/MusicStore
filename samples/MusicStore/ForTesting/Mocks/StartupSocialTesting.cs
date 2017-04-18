@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.Authorization;
@@ -65,8 +64,7 @@ namespace MusicStore
                     .AddEntityFrameworkStores<MusicStoreContext>()
                     .AddDefaultTokenProviders();
 
-            services.Configure<CookieAuthenticationOptions>(IdentityCookieOptions.ApplicationScheme, 
-                    options => options.AccessDeniedPath = "/Home/AccessDenied");
+            services.ConfigureApplicationCookie(options => options.AccessDeniedPath = "/Home/AccessDenied");
 
             services.AddCors(options =>
             {
