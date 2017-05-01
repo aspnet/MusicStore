@@ -1,5 +1,18 @@
 <Project>
-  <Target Name="_RunNanoTests" DependsOnTargets="Restore" Condition="'$(RUN_TESTS_ON_NANO)' == 'true'">
+
+  <PropertyGroup>
+    <PrepareDependsOn Condition="'$(UsePrebuiltPackageCache)'=='true'">$(PrepareDependsOn);UpdateNuGetConfig</PrepareDependsOn>
+  </PropertyGroup>
+
+  <Target Name="UpdateNuGetConfig">
+    <UpdatePackageSource
+      NuGetConfigPath="$(RepositoryRoot)NuGet.config"
+      SourceName="Dependencies"
+      SourceUri="$(DependencyBuildDirectory)"
+      Condition="Exists('$(DependencyBuildDirectory)')" />
+  </Target>
+
+  <Target Name="_RunNanoTests" AfterTargets="Restore" Condition="'$(RUN_TESTS_ON_NANO)' == 'true'">
     <MSBuild Targets="VSTest"
              Projects="$(MSBuildThisFileDirectory)..\test\MusicStore.E2ETests\MusicStore.E2ETests.csproj"
              Properties="Configuration=$(Configuration);VSTestLogger=trx;VSTestTestCaseFilter=E2ETests=NanoServer" />
