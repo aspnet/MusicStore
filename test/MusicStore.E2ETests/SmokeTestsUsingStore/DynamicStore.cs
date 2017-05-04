@@ -3,29 +3,35 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.AspNetCore.Server.IntegrationTesting;
+using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Logging;
 
 namespace E2ETests
 {
-    internal class DynamicStore : IDisposable
+    internal class DynamicStore : IStore
     {
         public const string MusicStoreAspNetCoreStore = "MUSICSTORE_ASPNETCORE_DYNAMIC_STORE";
-        private readonly string _storeWorkingDir;
         private readonly ILogger _logger;
+        private string _storeDir;
+        private string _storeWorkingDir;
 
-        public DynamicStore(bool createStoreInDefaultLocation, string storeDirectory, ILoggerFactory loggerFactory)
+        public DynamicStore(ILoggerFactory loggerFactory)
+        {
+            _logger = loggerFactory.CreateLogger<DynamicStore>();
+        }
+
+        public string CreateStore(bool createInDefaultLocation)
         {
             if (!IsEnabled())
             {
-                return;
+                return null;
             }
 
-            StoreDirectory = storeDirectory;
-            _logger = loggerFactory.CreateLogger<DynamicStore>();
+            _storeDir = GetStoreDirectory(createInDefaultLocation);
+            _storeWorkingDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             var applicationPath = Helpers.GetApplicationPath(ApplicationType.Portable);
             var applicationProjFilePath = Path.Combine(applicationPath, "MusicStore.csproj");
-            _storeWorkingDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var parameters = $"store "
                 + $" --framework netcoreapp2.0"
                 + $" --configuration {Helpers.GetCurrentBuildConfiguration()}"
@@ -34,9 +40,9 @@ namespace E2ETests
                 + $" --manifest {applicationProjFilePath}"
                 + $" --preserve-working-dir";
 
-            if (!createStoreInDefaultLocation)
+            if (!createInDefaultLocation)
             {
-                parameters += $" --output {StoreDirectory}";
+                parameters += $" --output {_storeDir}";
             }
 
             _logger.LogInformation($"Executing command: dotnet {parameters}");
@@ -63,9 +69,38 @@ namespace E2ETests
                 var message = $"dotnet store exited with exit code : {hostProcess.ExitCode}";
                 throw new Exception(message);
             }
+
+            return _storeDir;
         }
 
-        public string StoreDirectory { get; }
+        public void Dispose()
+        {
+            if (string.IsNullOrEmpty(_storeDir))
+            {
+                return;
+            }
+
+            if (Helpers.PreservePublishedApplicationForDebugging)
+            {
+                _logger.LogInformation("Skipping deleting the store and working directory as it has been disabled");
+            }
+            else
+            {
+                _logger.LogInformation("Deleting the storing and working directory.");
+
+                RetryHelper.RetryOperation(
+                        () => Directory.Delete(_storeDir, recursive: true),
+                        e => _logger.LogError($"Failed to delete directory : {e.Message}"),
+                        retryCount: 3,
+                        retryDelayMilliseconds: 100);
+
+                RetryHelper.RetryOperation(
+                        () => Directory.Delete(_storeWorkingDir, recursive: true),
+                        e => _logger.LogError($"Failed to delete directory : {e.Message}"),
+                        retryCount: 3,
+                        retryDelayMilliseconds: 100);
+            }
+        }
 
         public static bool IsEnabled()
         {
@@ -78,33 +113,31 @@ namespace E2ETests
             return true;
         }
 
-        public void Dispose()
+        private string GetStoreDirectory(bool createInDefaultLocation)
         {
-            if (_logger == null)
+            string storeDirectory;
+            if (createInDefaultLocation)
             {
-                return;
-            }
-            
-            if (Helpers.PreservePublishedApplicationForDebugging)
-            {
-                _logger.LogInformation("Skipping deleting the store and working directory as it has been disabled");
+                // On Windows: ..\.dotnet\x64\dotnet.exe
+                // On Linux  : ../.dotnet/dotnet
+                var dotnetDir = new FileInfo(DotNetMuxer.MuxerPath).Directory.FullName;
+
+                // On Windows: ..\.dotnet\x64\store
+                // On Linux  : ../.dotnet/x64/store
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    storeDirectory = Path.Combine(dotnetDir, "store");
+                }
+                else
+                {
+                    storeDirectory = Path.Combine(dotnetDir, "x64", "store");
+                }
             }
             else
             {
-                _logger.LogInformation("Deleting the storing and working directory.");
-
-                RetryHelper.RetryOperation(
-                        () => Directory.Delete(StoreDirectory, recursive: true),
-                        e => _logger.LogError($"Failed to delete directory : {e.Message}"),
-                        retryCount: 3,
-                        retryDelayMilliseconds: 100);
-
-                RetryHelper.RetryOperation(
-                        () => Directory.Delete(_storeWorkingDir, recursive: true),
-                        e => _logger.LogError($"Failed to delete directory : {e.Message}"),
-                        retryCount: 3,
-                        retryDelayMilliseconds: 100);
+                storeDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             }
+            return storeDirectory;
         }
 
         private string GetRuntimeIdentifier()
@@ -141,5 +174,4 @@ namespace E2ETests
             }
         }
     }
-
 }
