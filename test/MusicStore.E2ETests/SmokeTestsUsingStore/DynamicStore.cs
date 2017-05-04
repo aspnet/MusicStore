@@ -9,7 +9,7 @@ namespace E2ETests
 {
     internal class DynamicStore : IDisposable
     {
-        public const string MusicStoreAspNetCoreStore = "MUSICSTORE_ASPNETCORE_STORE";
+        public const string MusicStoreAspNetCoreStore = "MUSICSTORE_ASPNETCORE_DYNAMIC_STORE";
         private readonly string _storeWorkingDir;
         private readonly ILogger _logger;
 

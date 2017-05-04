@@ -1,16 +1,17 @@
 <Project>
 
   <PropertyGroup>
-    <PrepareDependsOn Condition="'$(MUSICSTORE_USE_PREBUILT_ASPNETCORE_STORE)'=='true'">$(PrepareDependsOn);UpdateNuGetConfig</PrepareDependsOn>
+    <PrepareDependsOn Condition="'$(MUSICSTORE_USE_PREBUILT_ASPNETCORE_STORE)'=='true' Or '$(MUSICSTORE_ASPNETCORE_DYNAMIC_STORE)'=='true'">
+      $(PrepareDependsOn);UpdateNuGetConfig
+    </PrepareDependsOn>
     <MusicStoreE2ETestProject>$(RepositoryRoot)test\MusicStore.E2ETests\MusicStore.E2ETests.csproj</MusicStoreE2ETestProject>
   </PropertyGroup>
 
   <Target Name="UpdateNuGetConfig">
     <UpdatePackageSource
       NuGetConfigPath="$(RepositoryRoot)NuGet.config"
-      SourceName="Dependencies"
-      SourceUri="$(DependencyBuildDirectory)"
-      Condition="Exists('$(DependencyBuildDirectory)')" />
+      SourceName="AspNetCoreStore"
+      SourceUri="$(AspNetCoreStore)" />
   </Target>
 
   <Target Name="_FilterTestProjects" BeforeTargets="TestProjects"
