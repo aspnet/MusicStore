@@ -207,6 +207,11 @@ namespace E2ETests
 
         public void Dispose()
         {
+            if(_logger == null)
+            {
+                return;
+            }
+
             if (Helpers.PreservePublishedApplicationForDebugging)
             {
                 _logger.LogInformation("Skipping deleting the store and working directory as it has been disabled");
