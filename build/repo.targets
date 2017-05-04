@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <PrepareDependsOn Condition="'$(UsePrebuiltPackageCache)'=='true'">$(PrepareDependsOn);UpdateNuGetConfig</PrepareDependsOn>
+    <PrepareDependsOn Condition="'$(MUSICSTORE_USE_PREBUILT_ASPNETCORE_STORE)'=='true'">$(PrepareDependsOn);UpdateNuGetConfig</PrepareDependsOn>
     <MusicStoreE2ETestProject>$(RepositoryRoot)test\MusicStore.E2ETests\MusicStore.E2ETests.csproj</MusicStoreE2ETestProject>
   </PropertyGroup>
 
@@ -13,7 +13,7 @@
       Condition="Exists('$(DependencyBuildDirectory)')" />
   </Target>
 
-  <Target Name="_FilterTestProjects" BeforeTargets="TestProjects" 
+  <Target Name="_FilterTestProjects" BeforeTargets="TestProjects"
   Condition="'$(VSTestTestCaseFilter)'=='E2Etests=NanoServer' Or '$(VSTestTestCaseFilter)'=='smoketests=packagecache'">
     <ItemGroup>
       <ProjectsToTest Remove="@(ProjectsToTest)" />

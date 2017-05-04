@@ -19,10 +19,9 @@ namespace E2ETests
             _output = output;
         }
 
-        [SkipIfEnvironmentVariableNotEnabled(BaseStoreSetupFixture.AspNetCoreStoreEnvironmentVariableName)]
+        [SkipIfEnvironmentVariableNotEnabled(DynamicStore.MusicStoreAspNetCoreStore)]
         [ConditionalTheory]
         [Trait("smoketests", "packagecache")]
-        [Trait("smoketests", "default-packagecache")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task DefaultLocation(ServerType serverType)
@@ -48,10 +47,9 @@ namespace E2ETests
             _output = output;
         }
 
-        [SkipIfEnvironmentVariableNotEnabled(BaseStoreSetupFixture.AspNetCoreStoreEnvironmentVariableName)]
+        [SkipIfEnvironmentVariableNotEnabled(DynamicStore.MusicStoreAspNetCoreStore)]
         [ConditionalTheory]
         [Trait("smoketests", "packagecache")]
-        [Trait("smoketests", "custom-packagecache")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task CustomLocation(ServerType serverType)
@@ -79,10 +77,9 @@ namespace E2ETests
 
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        [SkipIfEnvironmentVariableNotEnabled(BaseStoreSetupFixture.AspNetCoreStoreEnvironmentVariableName)]
+        [SkipIfEnvironmentVariableNotEnabled(StaticStore.MusicStoreUsePrebuiltAspNetCoreStore)]
         [ConditionalTheory]
         [Trait("smoketests", "packagecache")]
-        [Trait("smoketests", "default-packagecache")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task DefaultLocation(ServerType serverType)
@@ -110,10 +107,9 @@ namespace E2ETests
 
         [OSSkipCondition(OperatingSystems.Linux)]
         [OSSkipCondition(OperatingSystems.MacOSX)]
-        [SkipIfEnvironmentVariableNotEnabled(BaseStoreSetupFixture.AspNetCoreStoreEnvironmentVariableName)]
+        [SkipIfEnvironmentVariableNotEnabled(StaticStore.MusicStoreUsePrebuiltAspNetCoreStore)]
         [ConditionalTheory]
         [Trait("smoketests", "packagecache")]
-        [Trait("smoketests", "custom-packagecache")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task CustomLocation(ServerType serverType)

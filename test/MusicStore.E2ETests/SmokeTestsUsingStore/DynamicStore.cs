@@ -9,6 +9,7 @@ namespace E2ETests
 {
     internal class DynamicStore : IDisposable
     {
+        public const string MusicStoreAspNetCoreStore = "MUSICSTORE_ASPNETCORE_STORE";
         private readonly string _storeWorkingDir;
         private readonly ILogger _logger;
 
@@ -60,6 +61,17 @@ namespace E2ETests
         }
 
         public string StoreDirectory { get; }
+
+        public static bool IsEnabled()
+        {
+            var useStore = Environment.GetEnvironmentVariable(MusicStoreAspNetCoreStore);
+            if (string.IsNullOrEmpty(useStore)
+                || string.Equals(useStore, "false", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            return true;
+        }
 
         public void Dispose()
         {

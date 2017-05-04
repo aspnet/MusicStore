@@ -9,24 +9,21 @@ namespace E2ETests
 {
     public class BaseStoreSetupFixture : IDisposable
     {
-        public const string AspNetCoreStoreEnvironmentVariableName = "ASPNETCORE_STORE";
-
         private readonly IDisposable _logToken;
         private readonly ILogger<BaseStoreSetupFixture> _logger;
         private readonly IDisposable _store;
 
         public BaseStoreSetupFixture(bool createInDefaultLocation, string loggerName, bool createStore)
         {
-            CreateStoreInDefaultLocation = createInDefaultLocation;
-
-            var useAspNetCoreStore = Environment.GetEnvironmentVariable(AspNetCoreStoreEnvironmentVariableName);
-            if (useAspNetCoreStore == null || string.Equals(useAspNetCoreStore, "false", StringComparison.OrdinalIgnoreCase))
+            if (!DynamicStore.IsEnabled() && !StaticStore.IsEnabled())
             {
                 return;
             }
 
+            CreateStoreInDefaultLocation = createInDefaultLocation;
+
             var testLog = AssemblyTestLog.ForAssembly(typeof(BaseStoreSetupFixture).Assembly);
-             ILoggerFactory loggerFactory;
+            ILoggerFactory loggerFactory;
             _logToken = testLog.StartTestLog(null, loggerName, out loggerFactory, testName: loggerName);
             _logger = loggerFactory.CreateLogger<BaseStoreSetupFixture>();
 
