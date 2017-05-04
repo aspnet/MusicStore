@@ -13,3 +13,4 @@
   - Set environment variable called 'MUSICSTORE_USE_PREBUILT_ASPNETCORE_STORE' to 'true' for running these tests by
     unzipping an already created store. If set to 'true', also provide the folder path where the zipped store is
     present using the environment variable 'MUSICSTORE_ASPNETCORE_STORE_ZIP_LOCATION'.
+  - Run `build.cmd /p:VSTestTestCaseFilter=smoketests=usestore` or `./build.sh /p:VSTestTestCaseFilter=smoketests=usestore`

@@ -1,9 +1,8 @@
 <Project>
 
   <PropertyGroup>
-    <PrepareDependsOn Condition="'$(MUSICSTORE_USE_PREBUILT_ASPNETCORE_STORE)'=='true' Or '$(MUSICSTORE_ASPNETCORE_DYNAMIC_STORE)'=='true'">
-      $(PrepareDependsOn);UpdateNuGetConfig
-    </PrepareDependsOn>
+    <UseStore Condition="'$(MUSICSTORE_USE_PREBUILT_ASPNETCORE_STORE)'=='true' Or '$(MUSICSTORE_ASPNETCORE_DYNAMIC_STORE)'=='true'">true</UseStore>
+    <PrepareDependsOn Condition="'$(UseStore)'=='true'">$(PrepareDependsOn);UpdateNuGetConfig</PrepareDependsOn>
     <MusicStoreE2ETestProject>$(RepositoryRoot)test\MusicStore.E2ETests\MusicStore.E2ETests.csproj</MusicStoreE2ETestProject>
   </PropertyGroup>
 
@@ -14,8 +13,7 @@
       SourceUri="$(AspNetCoreStore)" />
   </Target>
 
-  <Target Name="_FilterTestProjects" BeforeTargets="TestProjects"
-  Condition="'$(VSTestTestCaseFilter)'=='E2Etests=NanoServer' Or '$(VSTestTestCaseFilter)'=='smoketests=packagecache'">
+  <Target Name="_FilterTestProjects" BeforeTargets="TestProjects" Condition="'$(UseStore)'=='true'">
     <ItemGroup>
       <ProjectsToTest Remove="@(ProjectsToTest)" />
       <ProjectsToTest Include="$(MusicStoreE2ETestProject)" />

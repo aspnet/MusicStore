@@ -21,7 +21,7 @@ namespace E2ETests
 
         [SkipIfEnvironmentVariableNotEnabled(DynamicStore.MusicStoreAspNetCoreStore)]
         [ConditionalTheory]
-        [Trait("smoketests", "packagecache")]
+        [Trait("smoketests", "usestore")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task DefaultLocation(ServerType serverType)
@@ -49,7 +49,7 @@ namespace E2ETests
 
         [SkipIfEnvironmentVariableNotEnabled(DynamicStore.MusicStoreAspNetCoreStore)]
         [ConditionalTheory]
-        [Trait("smoketests", "packagecache")]
+        [Trait("smoketests", "usestore")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task CustomLocation(ServerType serverType)
@@ -79,7 +79,7 @@ namespace E2ETests
         [OSSkipCondition(OperatingSystems.MacOSX)]
         [SkipIfEnvironmentVariableNotEnabled(StaticStore.MusicStoreUsePrebuiltAspNetCoreStore)]
         [ConditionalTheory]
-        [Trait("smoketests", "packagecache")]
+        [Trait("smoketests", "usestore")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task DefaultLocation(ServerType serverType)
@@ -109,7 +109,7 @@ namespace E2ETests
         [OSSkipCondition(OperatingSystems.MacOSX)]
         [SkipIfEnvironmentVariableNotEnabled(StaticStore.MusicStoreUsePrebuiltAspNetCoreStore)]
         [ConditionalTheory]
-        [Trait("smoketests", "packagecache")]
+        [Trait("smoketests", "usestore")]
         [InlineData(ServerType.Kestrel)]
         [InlineData(ServerType.WebListener)]
         public async Task CustomLocation(ServerType serverType)
