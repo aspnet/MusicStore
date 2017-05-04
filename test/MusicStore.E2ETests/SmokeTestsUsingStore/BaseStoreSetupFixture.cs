@@ -51,18 +51,18 @@ namespace E2ETests
             }
             else
             {
-                storeDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+                storeDirectory = Path.Combine(Path.GetTempPath(), $"store-{Guid.NewGuid()}");
             }
 
             StoreDirectory = storeDirectory;
 
             if (createStore)
             {
-                _store = new DynamicStore(createInDefaultLocation, storeDirectory, _logger);
+                _store = new DynamicStore(createInDefaultLocation, storeDirectory, loggerFactory);
             }
             else
             {
-                _store = new StaticStore(storeDirectory, _logger);
+                _store = new StaticStore(storeDirectory, loggerFactory);
             }
         }
 

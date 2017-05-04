@@ -13,14 +13,14 @@ namespace E2ETests
         private readonly string _storeWorkingDir;
         private readonly ILogger _logger;
 
-        public DynamicStore(bool createStoreInDefaultLocation, string storeDirectory, ILogger logger)
+        public DynamicStore(bool createStoreInDefaultLocation, string storeDirectory, ILoggerFactory loggerFactory)
         {
             StoreDirectory = storeDirectory;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<DynamicStore>();
 
             var applicationPath = Helpers.GetApplicationPath(ApplicationType.Portable);
             var applicationProjFilePath = Path.Combine(applicationPath, "MusicStore.csproj");
-            _storeWorkingDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            _storeWorkingDir = Path.Combine(Path.GetTempPath(), $"storeworkingdir-{Guid.NewGuid()}");
             var parameters = $"store "
                 + $" --framework netcoreapp2.0"
                 + $" --configuration {Helpers.GetCurrentBuildConfiguration()}"
@@ -49,7 +49,7 @@ namespace E2ETests
 
             var hostProcess = new Process() { StartInfo = startInfo };
 
-            hostProcess.StartAndCaptureOutAndErrToLogger("package-cache", _logger);
+            hostProcess.StartAndCaptureOutAndErrToLogger("dynamic-store", _logger);
 
             hostProcess.WaitForExit();
 

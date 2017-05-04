@@ -12,10 +12,10 @@ namespace E2ETests
         public const string MusicStoreAspNetCoreStoreZipLocation = "MUSICSTORE_ASPNETCORE_STORE_ZIP_LOCATION";
         private readonly ILogger _logger;
 
-        public StaticStore(string storeDirectory, ILogger logger)
+        public StaticStore(string storeDirectory, ILoggerFactory loggerFactory)
         {
             StoreDirectory = storeDirectory;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<StaticStore>();
 
             var rootPath = Environment.GetEnvironmentVariable(MusicStoreAspNetCoreStoreZipLocation);
             if (string.IsNullOrEmpty(rootPath))
