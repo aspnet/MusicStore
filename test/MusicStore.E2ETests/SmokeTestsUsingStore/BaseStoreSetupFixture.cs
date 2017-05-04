@@ -70,7 +70,18 @@ namespace E2ETests
             else
             {
                 var rootPath = Environment.GetEnvironmentVariable(AspNetCoreStoreZipLocationEnvironmentVariableName);
-                var zipFile = Path.Combine(rootPath, $"Build.RS.winx64.zip");
+                if (string.IsNullOrEmpty(rootPath))
+                {
+                    throw new InvalidOperationException(
+                        $"The environment variable '{AspNetCoreStoreZipLocationEnvironmentVariableName}' is not defined or is empty.");
+                }
+
+                var zipFile = Path.Combine(rootPath, "Build.RS.winx64.zip");
+                if (!File.Exists(zipFile))
+                {
+                    throw new InvalidOperationException($"Could not find file '{zipFile}'");
+                }
+
                 ZipFile.ExtractToDirectory(zipFile, StoreDirectory);
             }
         }
