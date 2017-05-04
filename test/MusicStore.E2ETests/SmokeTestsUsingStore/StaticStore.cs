@@ -14,23 +14,46 @@ namespace E2ETests
 
         public StaticStore(string storeDirectory, ILoggerFactory loggerFactory)
         {
+            if (!IsEnabled())
+            {
+                return;
+            }
+
             StoreDirectory = storeDirectory;
             _logger = loggerFactory.CreateLogger<StaticStore>();
 
             var rootPath = Environment.GetEnvironmentVariable(MusicStoreAspNetCoreStoreZipLocation);
             if (string.IsNullOrEmpty(rootPath))
             {
+                _logger.LogError("The direcotry path for the store zip file was not provided." +
+                    $"Set the environment variable '{MusicStoreAspNetCoreStoreZipLocation}' and try again.");
+
                 throw new InvalidOperationException(
                     $"The environment variable '{MusicStoreAspNetCoreStoreZipLocation}' is not defined or is empty.");
+            }
+            else
+            {
+                _logger.LogInformation($"Using the direcotry path for the store zip file:{rootPath}");
             }
 
             var zipFile = Path.Combine(rootPath, "Build.RS.winx64.zip");
             if (!File.Exists(zipFile))
             {
+                _logger.LogError($"Could not find the zip file: {zipFile}");
                 throw new InvalidOperationException($"Could not find file '{zipFile}'");
             }
 
-            ZipFile.ExtractToDirectory(zipFile, StoreDirectory);
+            _logger.LogInformation($"Extracing the zip file {zipFile} to store directory {StoreDirectory}");
+
+            try
+            {
+                ZipFile.ExtractToDirectory(zipFile, StoreDirectory);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error occurred while unzipping the file: {ex.ToString()}");
+                throw ex;
+            }
         }
 
         public string StoreDirectory { get; }
@@ -45,7 +68,6 @@ namespace E2ETests
             }
             return true;
         }
-
         public void Dispose()
         {
             if (Helpers.PreservePublishedApplicationForDebugging)
