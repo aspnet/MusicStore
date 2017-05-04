@@ -20,7 +20,7 @@ namespace E2ETests
 
             var applicationPath = Helpers.GetApplicationPath(ApplicationType.Portable);
             var applicationProjFilePath = Path.Combine(applicationPath, "MusicStore.csproj");
-            _storeWorkingDir = Path.Combine(Path.GetTempPath(), $"storeworkingdir-{Guid.NewGuid()}");
+            _storeWorkingDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             var parameters = $"store "
                 + $" --framework netcoreapp2.0"
                 + $" --configuration {Helpers.GetCurrentBuildConfiguration()}"
@@ -49,7 +49,7 @@ namespace E2ETests
 
             var hostProcess = new Process() { StartInfo = startInfo };
 
-            hostProcess.StartAndCaptureOutAndErrToLogger("dynamic-store", _logger);
+            hostProcess.StartAndCaptureOutAndErrToLogger(prefix: "", logger: _logger);
 
             hostProcess.WaitForExit();
 

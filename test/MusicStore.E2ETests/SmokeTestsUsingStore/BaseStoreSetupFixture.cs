@@ -51,7 +51,7 @@ namespace E2ETests
             }
             else
             {
-                storeDirectory = Path.Combine(Path.GetTempPath(), $"store-{Guid.NewGuid()}");
+                storeDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             }
 
             StoreDirectory = storeDirectory;
