@@ -5,6 +5,7 @@ env:
   global:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    - MUSICSTORE_ASPNETCORE_STORE_FEED: https://dotnet.myget.org/F/aspnetcore-release/api/v3/index.json
 mono: none
 os:
   - linux
