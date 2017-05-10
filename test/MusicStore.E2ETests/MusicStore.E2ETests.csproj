@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\build\dependencies.props" />
 
@@ -39,7 +39,6 @@
     -->
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
 
-    <PackageReference Include="System.Xml.XmlDocument" Version="$(CoreFxVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitVersion)" />
     <PackageReference Include="xunit" Version="$(XunitVersion)" />
     <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="$(AspNetCoreVersion)" />
