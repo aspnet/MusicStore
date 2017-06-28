@@ -29,9 +29,9 @@ namespace E2ETests
             _logger = loggerFactory.CreateLogger<Store>();
         }
 
-        public string CreateStore(bool createInDefaultLocation)
+        public string CreateStore()
         {
-            var storeParentDir = GetStoreParentDirectory(createInDefaultLocation);
+            var storeParentDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             InstallStore(storeParentDir);
 
@@ -102,6 +102,9 @@ namespace E2ETests
             {
                 throw new InvalidOperationException($"Could not find {nameof(assemblyInformationVersionAttribute)} from the assembly {aspnetCoreHttpAssembly.FullName}");
             }
+
+            assemblyInformationVersionAttribute = new AssemblyInformationalVersionAttribute("2.0.0-preview3-25939");
+            
 
             _logger.LogInformation($"Downloading package with id {packageId} and version {assemblyInformationVersionAttribute.InformationalVersion} from feed {storeFeed}");
 
@@ -225,23 +228,6 @@ namespace E2ETests
                     throw new InvalidOperationException(message);
                 }
             }
-        }
-
-        private string GetStoreParentDirectory(bool createInDefaultLocation)
-        {
-            string storeParentDir;
-            if (createInDefaultLocation)
-            {
-                // On Windows: ..\.dotnet\x64\dotnet.exe
-                // On Linux  : ../.dotnet/dotnet
-                var dotnetDir = new FileInfo(DotNetMuxer.MuxerPath).Directory.FullName;
-                storeParentDir = dotnetDir;
-            }
-            else
-            {
-                storeParentDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            }
-            return storeParentDir;
         }
     }
 }

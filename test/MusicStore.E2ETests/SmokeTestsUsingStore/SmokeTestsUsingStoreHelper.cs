@@ -14,7 +14,7 @@ namespace E2ETests
         {
         }
 
-        public async Task SmokeTestSuite(ServerType serverType, bool isStoreInDefaultLocation, string storeDirectory)
+        public async Task SmokeTestSuite(ServerType serverType, string storeDirectory)
         {
             var targetFramework = "netcoreapp2.0";
             var testName = $"SmokeTestsUsingStore_{serverType}";
@@ -38,6 +38,7 @@ namespace E2ETests
                         DbUtils.DropDatabase(musicStoreDbName, logger);
                     }
                 };
+                deploymentParameters.AdditionalPublishParameters = " --force";
 
                 // Override the connection strings using environment based configuration
                 deploymentParameters.EnvironmentVariables
@@ -45,14 +46,12 @@ namespace E2ETests
                         MusicStoreConfig.ConnectionStringKey,
                         DbUtils.CreateConnectionString(musicStoreDbName)));
 
-                if (!isStoreInDefaultLocation)
-                {
-                    deploymentParameters.EnvironmentVariables.Add(
-                        new KeyValuePair<string, string>("DOTNET_SHARED_STORE", storeDirectory));
-                }
+                deploymentParameters.EnvironmentVariables.Add(
+                    new KeyValuePair<string, string>("DOTNET_SHARED_STORE", storeDirectory));
 
-                using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, loggerFactory))
+                //using (var deployer = ApplicationDeployerFactory.Create(deploymentParameters, loggerFactory))
                 {
+                    var deployer = ApplicationDeployerFactory.Create(deploymentParameters, loggerFactory);
                     var deploymentResult = await deployer.DeployAsync();
 
                     var mvcCoreDllPath = Path.Combine(deploymentResult.ContentRoot, "Microsoft.AspNetCore.Mvc.Core.dll");
