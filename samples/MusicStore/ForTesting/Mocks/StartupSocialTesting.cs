@@ -94,7 +94,8 @@ namespace MusicStore
                 options.AddPolicy("ManageStore", new AuthorizationPolicyBuilder().RequireClaim("ManageStore", "Allowed").Build());
             });
 
-            services.AddAuthentication().AddFacebook(options =>
+            services.AddAuthentication()
+                .AddFacebook(options =>
             {
                 options.AppId = "[AppId]";
                 options.AppSecret = "[AppSecret]";
