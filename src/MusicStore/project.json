@@ -3,7 +3,7 @@
     "Microsoft"
   ],
   "description": "Music store application on ASP.NET 5",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "buildOptions": {
     "compile": {
       "include": [
@@ -46,8 +46,8 @@
     "Microsoft.AspNetCore.Diagnostics": "1.0.4",
     "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "1.0.4",
     "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "1.0.4",
-    "Microsoft.AspNetCore.Mvc": "1.0.5",
-    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.5",
+    "Microsoft.AspNetCore.Mvc": "1.0.6",
+    "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.6",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.4",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.5",
     "Microsoft.AspNetCore.Server.WebListener": "1.0.4",
