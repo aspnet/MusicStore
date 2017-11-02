@@ -56,7 +56,7 @@
     "Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.6",
     "Microsoft.AspNetCore.Server.IISIntegration": "1.0.5",
     "Microsoft.AspNetCore.Server.Kestrel": "1.0.6",
-    "Microsoft.AspNetCore.Server.WebListener": "1.0.5",
+    "Microsoft.AspNetCore.Server.WebListener": "1.0.6",
     "Microsoft.AspNetCore.Session": "1.0.5",
     "Microsoft.AspNetCore.StaticFiles": "1.0.5",
     "Microsoft.EntityFrameworkCore.InMemory": "1.0.6",
