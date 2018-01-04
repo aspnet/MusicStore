@@ -27,13 +27,13 @@ namespace E2ETests
             return NtlmAuthenticationTest(ServerType.WebListener, RuntimeFlavor.CoreClr, ApplicationType.Portable);
         }
 
-        [ConditionalFact (Skip = "https://github.com/aspnet/MusicStore/issues/830") ]
+        [ConditionalFact]
         public Task NtlmAuthenticationTest_WebListener_CoreCLR_Standalone()
         {
             return NtlmAuthenticationTest(ServerType.WebListener, RuntimeFlavor.CoreClr, ApplicationType.Standalone);
         }
 
-        [ConditionalFact]
+        [ConditionalFact(Skip = "https://github.com/aspnet/MusicStore/issues/830")]
         public Task NtlmAuthenticationTest_IISExpress_CoreCLR_Portable()
         {
             return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Portable);
