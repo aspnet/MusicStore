@@ -48,6 +48,18 @@ namespace E2ETests
         }
 
         [Fact]
+        public Task PublishAndRunDevelopmentTests_X64_Kestrel_CoreClr_Portable()
+        {
+            return _testRunner.RunTests(ServerType.Kestrel, RuntimeFlavor.CoreClr, ApplicationType.Portable, RuntimeArchitecture.x64);
+        }
+
+        [Fact]
+        public Task PublishAndRunDevelopmentTests_X64_Kestrel_Clr_Portable()
+        {
+            return _testRunner.RunTests(ServerType.Kestrel, RuntimeFlavor.Clr, ApplicationType.Portable, RuntimeArchitecture.x64);
+        }
+
+        [Fact]
         public Task PublishAndRunTests_X64_Kestrel_CoreClr_Standalone()
         {
             return RunTests(ServerType.Kestrel, RuntimeFlavor.CoreClr, ApplicationType.Standalone);
