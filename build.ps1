@@ -1,4 +1,5 @@
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $ErrorActionPreference = "Stop"
 
 function DownloadWithRetry([string] $url, [string] $downloadLocation, [int] $retries) 
@@ -66,5 +67,6 @@ if (!(Test-Path $buildFolder)) {
 }
 
 &"$buildFile" $args
+
 
 
