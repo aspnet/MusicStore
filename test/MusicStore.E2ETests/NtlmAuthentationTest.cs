@@ -33,18 +33,42 @@ namespace E2ETests
         }
 
         [ConditionalFact]
-        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_Portable()
+        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_V1_Portable()
         {
-            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Portable);
+            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Portable, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V1");
         }
 
         [ConditionalFact]
-        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_Standalone()
+        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_V1_Standalone()
         {
-            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Standalone);
+            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Standalone, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V1");
+        }
+        [ConditionalFact]
+        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_V2_Portable()
+        {
+            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Portable, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
         }
 
+        [ConditionalFact]
+        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_V2Standalone()
+        {
+            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Standalone, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
+        }
+
+        [ConditionalFact]
+        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_InProcess_Portable()
+        {
+            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Portable, HostingModel.InProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
+        }
+
+        [ConditionalFact]
+        public Task NtlmAuthenticationTest_IISExpress_CoreCLR_InProcess_Standalone()
+        {
+            return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Standalone, HostingModel.InProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
+        }
+        
 #if !NETCOREAPP2_0 // Avoid running CLR based tests once on netcoreapp2.0 and netcoreapp2.1 each
+        
         [ConditionalFact]
         public Task NtlmAuthenticationTest_WebListener_CLR()
         {
@@ -56,9 +80,13 @@ namespace E2ETests
         {
             return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.Clr, ApplicationType.Standalone);
         }
-#endif
 
-        private async Task NtlmAuthenticationTest(ServerType serverType, RuntimeFlavor runtimeFlavor, ApplicationType applicationType)
+        private async Task NtlmAuthenticationTest(
+            ServerType serverType, 
+            RuntimeFlavor runtimeFlavor, 
+            ApplicationType applicationType,
+            HostingModel hostingModel = HostingModel.InProcess,
+            string additionalPublishParameters = "")
         {
             var architecture = RuntimeArchitecture.x64;
             var testName = $"NtlmAuthentication_{serverType}_{runtimeFlavor}_{applicationType}";
@@ -80,7 +108,9 @@ namespace E2ETests
                     UserAdditionalCleanup = parameters =>
                     {
                         DbUtils.DropDatabase(musicStoreDbName, logger);
-                    }
+                    },
+                    HostingModel = hostingModel,
+                    AdditionalPublishParameters = additionalPublishParameters
                 };
 
                 // Override the connection strings using environment based configuration

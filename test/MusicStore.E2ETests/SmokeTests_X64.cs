@@ -46,16 +46,44 @@ namespace E2ETests
 #endif
         [ConditionalFact]
         [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
-        public Task SmokeTests_X64_IISExpress_CoreClr_Portable()
+        public Task SmokeTests_X64_IISExpress_CoreClr_OutOfProcess_V1_Portable()
         {
-            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable);
+            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V1");
         }
 
         [ConditionalFact]
         [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
-        public Task SmokeTests_X64_IISExpress_CoreClr_Standalone()
+        public Task SmokeTests_X64_IISExpress_CoreClr_OutOfProcess_V1_Standalone()
         {
-            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone);
+            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V1");
+        }
+
+        [ConditionalFact]
+        [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
+        public Task SmokeTests_X64_IISExpress_CoreClr_OutOfProcess_V2_Portable()
+        {
+            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
+        }
+
+        [ConditionalFact]
+        [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
+        public Task SmokeTests_X64_IISExpress_CoreClr_OutOfProcess_V2_Standalone()
+        {
+            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone, HostingModel.OutOfProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
+        }
+
+        [ConditionalFact]
+        [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
+        public Task SmokeTests_X64_IISExpress_CoreClr_InProcess_Portable()
+        {
+            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Portable, HostingModel.InProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
+        }
+
+        [ConditionalFact]
+        [OSSkipCondition(OperatingSystems.Linux | OperatingSystems.MacOSX)]
+        public Task SmokeTests_X64_IISExpress_CoreClr_InProcess_Standalone()
+        {
+            return _smokeTestRunner.SmokeTestSuite(ServerType.IISExpress, RuntimeFlavor.CoreClr, RuntimeArchitecture.x64, ApplicationType.Standalone, HostingModel.InProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
         }
 #if !NETCOREAPP2_0 // Avoid running CLR based tests once on netcoreapp2.0 and netcoreapp2.1 each
         [ConditionalFact]

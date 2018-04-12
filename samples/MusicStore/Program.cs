@@ -46,8 +46,9 @@ namespace MusicStore
                     builder.UseHttpSys();
                 }
             }
-            else
+            else if (!string.Equals(builder.GetSetting("server"), "Microsoft.AspNetCore.Server.IIS", StringComparison.Ordinal))
             {
+                // Check that we are not using IIS inproc before we add Kestrel.
                 builder.UseKestrel();
             }
 

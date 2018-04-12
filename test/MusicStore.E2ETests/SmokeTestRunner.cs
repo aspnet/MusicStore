@@ -21,7 +21,9 @@ namespace E2ETests
             ServerType serverType,
             RuntimeFlavor runtimeFlavor,
             RuntimeArchitecture architecture,
-            ApplicationType applicationType)
+            ApplicationType applicationType,
+            HostingModel hostingModel = HostingModel.OutOfProcess,
+            string additionalPublishParameters = "")
         {
             var testName = $"SmokeTestSuite_{serverType}_{applicationType}";
             using (StartLog(out var loggerFactory, testName))
@@ -43,7 +45,9 @@ namespace E2ETests
                     UserAdditionalCleanup = parameters =>
                     {
                         DbUtils.DropDatabase(musicStoreDbName, logger);
-                    }
+                    },
+                    HostingModel = hostingModel,
+                    AdditionalPublishParameters = additionalPublishParameters
                 };
 
                 // Override the connection strings using environment based configuration
