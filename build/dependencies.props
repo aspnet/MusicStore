@@ -5,6 +5,7 @@
   <PropertyGroup Label="Package Versions">
     <MicrosoftAspNetCoreAllPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreAllPackageVersion>
     <MicrosoftAspNetCoreAspNetCoreModulePackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreAspNetCoreModulePackageVersion>
+    <MicrosoftAspNetCoreAspNetCoreModuleV1PackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreAspNetCoreModuleV1PackageVersion>
     <MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreAuthenticationCookiesPackageVersion>
     <MicrosoftAspNetCoreAuthenticationCorePackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreAuthenticationCorePackageVersion>
     <MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreAuthenticationFacebookPackageVersion>
@@ -19,6 +20,7 @@
     <MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreMvcRazorViewCompilationPackageVersion>
     <MicrosoftAspNetCorePackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCorePackageVersion>
     <MicrosoftAspNetCoreServerHttpSysPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreServerHttpSysPackageVersion>
+    <MicrosoftAspNetCoreServerIISPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreServerIISPackageVersion>
     <MicrosoftAspNetCoreServerIntegrationTestingPackageVersion>0.5.0-preview2-32110</MicrosoftAspNetCoreServerIntegrationTestingPackageVersion>
     <MicrosoftAspNetCoreSessionPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreSessionPackageVersion>
     <MicrosoftAspNetCoreStaticFilesPackageVersion>2.1.0-preview3-32110</MicrosoftAspNetCoreStaticFilesPackageVersion>

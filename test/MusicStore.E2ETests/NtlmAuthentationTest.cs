@@ -66,7 +66,7 @@ namespace E2ETests
         {
             return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.CoreClr, ApplicationType.Standalone, HostingModel.InProcess, additionalPublishParameters: "/p:ANCMVersion=V2");
         }
-        
+
 #if !NETCOREAPP2_0 // Avoid running CLR based tests once on netcoreapp2.0 and netcoreapp2.1 each
         
         [ConditionalFact]
@@ -80,6 +80,7 @@ namespace E2ETests
         {
             return NtlmAuthenticationTest(ServerType.IISExpress, RuntimeFlavor.Clr, ApplicationType.Standalone);
         }
+#endif
 
         private async Task NtlmAuthenticationTest(
             ServerType serverType, 
